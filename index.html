@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sakura Kaiten — Authentic Japanese Sushi Restaurant</title>
+  <meta name="description" content="Authentic kaiten-zushi experience since 1998. Fresh plates on a moving belt, crafted by master sushi chefs. Reserve your table today." />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080808;--bg2:#0f0f0f;--bg3:#161616;--bg4:#1c1c1c;
+      --fg:#f2ede4;--fg2:#c5bba8;--fg3:#7d7264;--fg4:#4a4540;
+      --card:#141414;--card2:#1e1e1e;--card3:#242424;
+      --bd:#1e1e1e;--bd2:#282828;--bd3:#323232;
+      --accent:#d94f35;--accent2:#f06449;--accent3:#ff8066;
+      --gold:#c4963c;--gold2:#e0b85a;--gold3:#f5d07a;
+      --green:#3a8c5c;
+      --ring:#d94f35;
+      --c1:#d94f35;--c2:#c4963c;--c3:#3a8c5c;--c4:#3a7fd4;--c5:#8b4fcc;
+      --belt:color-mix(in oklab,var(--fg) 22%,var(--bg));
+      --belt-side:color-mix(in oklab,var(--fg) 9%,var(--bg));
+      --rail:color-mix(in oklab,var(--fg3) 55%,var(--bg));
+      --island:color-mix(in oklab,var(--fg) 7%,var(--bg));
+      --island-low:color-mix(in oklab,var(--fg) 4%,var(--bg));
+      --island-wall:color-mix(in oklab,var(--fg) 3%,var(--bg));
+      --shadow:rgba(0,0,0,.85);
+      --radius-sm:.5rem;--radius:.75rem;--radius-lg:1.25rem;--radius-xl:2rem;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    html,body{min-height:100vh}
+    body{font-family:'Helvetica Neue',Arial,-apple-system,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:99px}
+
+    /* ════ UTILS ════ */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    .reveal-left{opacity:0;transform:translateX(-32px);transition:opacity .7s ease,transform .7s ease}
+    .reveal-left.visible{opacity:1;transform:none}
+    .reveal-right{opacity:0;transform:translateX(32px);transition:opacity .7s ease,transform .7s ease}
+    .reveal-right.visible{opacity:1;transform:none}
+    .delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}.delay-4{transition-delay:.4s}.delay-5{transition-delay:.5s}
+
+    /* ════ NAV ════ */
+    #navbar{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:.85rem 2.5rem;background:transparent;transition:background .4s,border-color .4s,padding .3s;border-bottom:1px solid transparent}
+    #navbar.scrolled{background:color-mix(in oklab,var(--bg) 94%,transparent);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-color:var(--bd)}
+    .nav-logo{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--fg)}
+    .nav-logo-icon{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .nav-logo-text{font-size:.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+    .nav-logo-sub{font-size:.55rem;letter-spacing:.22em;color:var(--fg3);text-transform:uppercase;margin-top:-1px}
+    .nav-center{display:flex;align-items:center;gap:2.5rem}
+    .nav-center a{color:var(--fg3);text-decoration:none;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;position:relative;padding-bottom:2px}
+    .nav-center a::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--accent);transform:scaleX(0);transition:transform .25s}
+    .nav-center a:hover{color:var(--fg)}.nav-center a:hover::after{transform:scaleX(1)}
+    .nav-right{display:flex;align-items:center;gap:1rem}
+    .nav-phone{font-size:.75rem;color:var(--fg3);letter-spacing:.04em;display:flex;align-items:center;gap:.4rem}
+    .nav-cta{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem 1rem;border-radius:9999px;background:var(--accent);color:#fff;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s;border:none;cursor:pointer;font-family:inherit}
+    .nav-cta:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 6px 20px -6px var(--accent)}
+    /* mobile */
+    .nav-hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:.4rem;z-index:201}
+    .nav-hamburger span{display:block;width:20px;height:1.5px;background:var(--fg);border-radius:2px;transition:transform .3s,opacity .3s}
+    .nav-hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+    .nav-hamburger.open span:nth-child(2){opacity:0}
+    .nav-hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+    #mobile-menu{position:fixed;inset:0;z-index:199;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;transform:translateY(-100%);transition:transform .4s cubic-bezier(.4,0,.2,1)}
+    #mobile-menu.open{transform:none}
+    #mobile-menu a{font-size:1.75rem;font-weight:300;letter-spacing:-.01em;color:var(--fg);text-decoration:none;transition:color .2s}
+    #mobile-menu a:hover{color:var(--accent)}
+    #mobile-menu .mob-cta{margin-top:1rem;font-size:1rem;font-weight:600;padding:.75rem 2rem;background:var(--accent);color:#fff;border-radius:9999px}
+    @media(max-width:900px){.nav-center{display:none}.nav-phone{display:none}.nav-hamburger{display:flex}}
+    @media(max-width:600px){#navbar{padding:.85rem 1.25rem}}
+
+    /* ════ HERO ════ */
+    .hero{position:relative;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:0;overflow:hidden;padding:0 2.5rem 0 calc(2.5rem + 20px);padding-top:80px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;padding:6rem 1.5rem 3rem;text-align:center}}
+    .hero-noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");opacity:.4;pointer-events:none}
+    .hero-glow{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--accent) 14%,transparent),transparent 70%);top:-100px;right:-100px;pointer-events:none;animation:glow-pulse 6s ease-in-out infinite}
+    .hero-glow2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--gold) 8%,transparent),transparent 70%);bottom:-150px;left:10%;pointer-events:none;animation:glow-pulse 8s ease-in-out 2s infinite}
+    @keyframes glow-pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+    .hero-left{position:relative;z-index:1;max-width:560px}
+    @media(max-width:900px){.hero-left{margin:0 auto;max-width:480px}}
+    .hero-tag{display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);margin-bottom:1.75rem;padding:.3rem .85rem;border:1px solid color-mix(in oklab,var(--gold) 35%,transparent);border-radius:9999px;background:color-mix(in oklab,var(--gold) 8%,transparent)}
+    .hero-tag-dot{width:5px;height:5px;border-radius:50%;background:var(--gold2);animation:blink 2s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero-h1{font-size:clamp(2.6rem,5vw,4.8rem);font-weight:300;line-height:1.06;letter-spacing:-.025em;margin-bottom:1.75rem}
+    .hero-h1 em{font-style:italic;font-weight:300;color:var(--accent2)}
+    .hero-h1 strong{font-weight:800;display:block}
+    .hero-h1 .line3{color:var(--fg3);font-size:.65em;font-weight:400;letter-spacing:.05em;text-transform:uppercase;font-style:normal}
+    .hero-p{font-size:.95rem;color:var(--fg2);line-height:1.8;max-width:420px;margin-bottom:2.25rem}
+    @media(max-width:900px){.hero-p{margin:0 auto 2.25rem}}
+    .hero-btns{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap}
+    @media(max-width:900px){.hero-btns{justify-content:center}}
+    .btn-red{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;border-radius:9999px;background:var(--accent);color:#fff;font-size:.83rem;font-weight:600;letter-spacing:.04em;text-decoration:none;border:none;cursor:pointer;font-family:inherit;transition:background .2s,transform .15s,box-shadow .2s}
+    .btn-red:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 10px 28px -8px var(--accent)}
+    .btn-ghost{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.6rem;border-radius:9999px;border:1px solid var(--bd3);color:var(--fg2);font-size:.83rem;font-weight:500;text-decoration:none;background:none;cursor:pointer;font-family:inherit;transition:border-color .2s,color .2s,transform .15s,background .2s}
+    .btn-ghost:hover{border-color:var(--fg4);color:var(--fg);background:var(--card);transform:translateY(-2px)}
+    .hero-meta{display:flex;align-items:center;gap:2.5rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--bd2);flex-wrap:wrap}
+    @media(max-width:900px){.hero-meta{justify-content:center}}
+    .hero-meta-item{text-align:left}
+    .hero-meta-num{font-size:1.75rem;font-weight:800;letter-spacing:-.04em;color:var(--fg);line-height:1}
+    .hero-meta-num sup{font-size:.6em;font-weight:400;vertical-align:super}
+    .hero-meta-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);margin-top:.25rem}
+    /* hero right — visual */
+    .hero-right{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%}
+    @media(max-width:900px){.hero-right{display:none}}
+    .hero-visual{position:relative;width:440px;height:440px}
+    .hero-plate-ring{position:absolute;border-radius:50%;border:1px solid var(--bd2)}
+    .hero-plate-ring:nth-child(1){inset:0;animation:spin 40s linear infinite}
+    .hero-plate-ring:nth-child(2){inset:10%;animation:spin 30s linear infinite reverse}
+    .hero-plate-ring:nth-child(3){inset:20%;animation:spin 20s linear infinite;border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    .hero-center{position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--card3),var(--card));display:flex;align-items:center;justify-content:center;font-size:5.5rem;border:1px solid var(--bd2);box-shadow:0 0 60px color-mix(in oklab,var(--accent) 20%,transparent),inset 0 1px 0 color-mix(in oklab,white 6%,transparent)}
+    .hero-orbit{position:absolute;width:56px;height:56px;border-radius:50%;background:var(--card2);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 4px 16px var(--shadow)}
+    .hero-orbit:nth-child(4){top:2%;left:50%;transform:translateX(-50%);animation:float 3s ease-in-out infinite}
+    .hero-orbit:nth-child(5){top:50%;right:0;transform:translateY(-50%);animation:float 3.5s ease-in-out .5s infinite}
+    .hero-orbit:nth-child(6){bottom:2%;left:50%;transform:translateX(-50%);animation:float 4s ease-in-out 1s infinite}
+    .hero-orbit:nth-child(7){top:50%;left:0;transform:translateY(-50%);animation:float 3.2s ease-in-out 1.5s infinite}
+    @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+    .hero-orbit:nth-child(5){animation:floatY 3.5s ease-in-out .5s infinite}
+    .hero-orbit:nth-child(7){animation:floatY 3.2s ease-in-out 1.5s infinite}
+    @keyframes floatY{0%,100%{transform:translateY(-50%)}50%{transform:translateY(calc(-50% - 8px))}}
+    .hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--fg4);font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;z-index:1}
+    .hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--fg4),transparent);animation:scroll-line 2s ease-in-out infinite}
+    @keyframes scroll-line{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+    /* ════ SECTION BASE ════ */
+    .section{padding:6rem 2.5rem}
+    @media(max-width:600px){.section{padding:4rem 1.25rem}}
+    .section-inner{max-width:1100px;margin:0 auto}
+    .label{font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:.6rem}
+    .title{font-size:clamp(1.75rem,3.5vw,2.75rem);font-weight:300;letter-spacing:-.025em;line-height:1.2;margin-bottom:.75rem}
+    .title b{font-weight:800}
+    .subtitle{font-size:.92rem;color:var(--fg2);line-height:1.8;max-width:500px}
+    .ornament{display:flex;align-items:center;gap:1rem;margin:.75rem 0 1.5rem}
+    .ornament-line{flex:0 0 40px;height:1px;background:linear-gradient(to right,var(--gold),transparent)}
+    .ornament-mark{font-size:.7rem;color:var(--gold2);letter-spacing:.1em}
+
+    /* ════ BELT SECTION ════ */
+    .belt-wrap{background:var(--bg);position:relative}
+    .belt-wrap::before,.belt-wrap::after{content:"";position:absolute;left:0;right:0;height:1px;background:linear-gradient(to right,transparent 5%,var(--bd2) 50%,transparent 95%)}
+    .belt-wrap::before{top:0}.belt-wrap::after{bottom:0}
+
+    /* ════ FEATURES STRIP ════ */
+    .features-strip{background:var(--bg2);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:1.75rem 2.5rem;overflow:hidden}
+    .features-track{display:flex;gap:3.5rem;align-items:center;white-space:nowrap;animation:marquee 28s linear infinite}
+    .features-track:hover{animation-play-state:paused}
+    @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .feat-item{display:inline-flex;align-items:center;gap:.6rem;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);flex-shrink:0}
+    .feat-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0}
+
+    /* ════ ABOUT ════ */
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+    @media(max-width:800px){.about-grid{grid-template-columns:1fr;gap:3rem}}
+    .about-visual{position:relative}
+    .about-frame{border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:3/4;background:linear-gradient(160deg,var(--bg3),var(--bg4));display:flex;align-items:center;justify-content:center;font-size:7rem;border:1px solid var(--bd);position:relative}
+    .about-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,color-mix(in oklab,var(--bg) 70%,transparent));pointer-events:none}
+    .about-badge{position:absolute;bottom:1.75rem;left:1.75rem;background:color-mix(in oklab,var(--bg) 90%,transparent);backdrop-filter:blur(20px);border:1px solid var(--bd2);border-radius:var(--radius);padding:.875rem 1.1rem;z-index:1}
+    .about-badge-num{font-size:2.25rem;font-weight:800;letter-spacing:-.04em;color:var(--gold2);line-height:1}
+    .about-badge-text{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);margin-top:.3rem}
+    .about-award{position:absolute;top:1.5rem;right:-1.5rem;width:80px;height:80px;border-radius:50%;background:var(--card2);border:1px solid var(--bd2);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.1rem;box-shadow:0 8px 32px var(--shadow)}
+    @media(max-width:800px){.about-award{display:none}}
+    .about-award-icon{font-size:1.4rem}
+    .about-award-text{font-size:.45rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;line-height:1.3}
+    .about-text .subtitle{max-width:100%}
+    .check-list{list-style:none;margin-top:1.75rem;display:flex;flex-direction:column;gap:.7rem}
+    .check-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.88rem;color:var(--fg2);line-height:1.6}
+    .check-icon{width:18px;height:18px;border-radius:50%;background:color-mix(in oklab,var(--accent) 15%,transparent);border:1px solid color-mix(in oklab,var(--accent) 40%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+    .check-icon svg{color:var(--accent)}
+
+    /* ════ MENU HIGHLIGHTS ════ */
+    .menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.5rem}
+    @media(max-width:900px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:500px){.menu-grid{grid-template-columns:1fr}}
+    .menu-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s;position:relative}
+    .menu-card:hover{transform:translateY(-6px);border-color:var(--bd3);box-shadow:0 16px 48px -16px rgba(0,0,0,.6)}
+    .menu-card-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:linear-gradient(160deg,var(--bg3),var(--bg4));position:relative;overflow:hidden}
+    .menu-card-img::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--card));pointer-events:none}
+    .menu-card-body{padding:1rem 1.1rem 1.1rem}
+    .menu-card-name{font-size:.9rem;font-weight:600;letter-spacing:.01em;margin-bottom:.25rem}
+    .menu-card-desc{font-size:.75rem;color:var(--fg3);line-height:1.5;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .menu-card-footer{display:flex;align-items:center;justify-content:space-between}
+    .menu-card-price{font-size:.95rem;font-weight:700;color:var(--gold2);font-variant-numeric:tabular-nums}
+    .menu-card-tier{display:flex;gap:3px;align-items:center}
+    .menu-card-tier span{width:5px;height:5px;border-radius:50%;background:var(--bd3)}
+    .menu-card-tier span.filled{background:var(--gold)}
+    .menu-card-badge{position:absolute;top:.75rem;right:.75rem;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .6rem;border-radius:9999px;background:color-mix(in oklab,var(--accent) 18%,transparent);color:var(--accent2);border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);font-weight:600}
+
+    /* ════ CHEFS ════ */
+    .chefs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+    @media(max-width:750px){.chefs-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.chefs-grid{grid-template-columns:1fr}}
+    .chef-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius-lg);overflow:hidden;transition:transform .25s,border-color .25s;position:relative}
+    .chef-card:hover{transform:translateY(-5px);border-color:var(--bd2)}
+    .chef-card:hover .chef-overlay{opacity:1}
+    .chef-photo{height:220px;display:flex;align-items:center;justify-content:center;font-size:5rem;background:linear-gradient(160deg,var(--bg3),var(--bg4));position:relative}
+    .chef-overlay{position:absolute;inset:0;background:linear-gradient(to top,color-mix(in oklab,var(--accent) 50%,transparent),transparent);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1rem}
+    .chef-overlay-text{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.9);font-weight:600}
+    .chef-body{padding:1.1rem 1.25rem 1.25rem}
+    .chef-name{font-size:.92rem;font-weight:700;letter-spacing:.01em}
+    .chef-role{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-top:.2rem;font-weight:600}
+    .chef-origin{font-size:.72rem;color:var(--fg3);margin-top:.15rem}
+    .chef-bio{font-size:.78rem;color:var(--fg3);margin-top:.6rem;line-height:1.65}
+    .chef-stars{display:flex;gap:2px;margin-top:.75rem}
+    .chef-stars span{font-size:.6rem;color:var(--gold2)}
+
+    /* ════ EXPERIENCE / CTA ════ */
+    .exp-wrap{border-radius:var(--radius-xl);background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--bd2);overflow:hidden;position:relative;padding:4rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+    @media(max-width:800px){.exp-wrap{grid-template-columns:1fr;padding:3rem 2rem;text-align:center}}
+    .exp-glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,color-mix(in oklab,var(--accent) 12%,transparent),transparent 70%);right:-100px;top:-100px;pointer-events:none}
+    .exp-left .title{font-size:clamp(1.6rem,3vw,2.5rem)}
+    .exp-list{list-style:none;margin-top:1.5rem;display:flex;flex-direction:column;gap:.6rem}
+    .exp-list li{display:flex;align-items:center;gap:.6rem;font-size:.83rem;color:var(--fg2)}
+    .exp-list li::before{content:"✦";color:var(--gold);font-size:.5rem;flex-shrink:0}
+    .exp-right{display:flex;flex-direction:column;gap:1rem}
+    .exp-price-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--radius);padding:1.25rem;display:flex;align-items:center;justify-content:space-between}
+    .exp-price-name{font-size:.8rem;font-weight:600;letter-spacing:.04em}
+    .exp-price-sub{font-size:.7rem;color:var(--fg3);margin-top:.1rem}
+    .exp-price-val{font-size:1.3rem;font-weight:800;color:var(--gold2);font-variant-numeric:tabular-nums}
+    @media(max-width:800px){.exp-list{align-items:center}}
+
+    /* ════ TESTIMONIALS ════ */
+    .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2.5rem}
+    @media(max-width:750px){.reviews-grid{grid-template-columns:1fr}}
+    .review-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius-lg);padding:1.5rem;position:relative;transition:border-color .2s}
+    .review-card:hover{border-color:var(--bd2)}
+    .review-card::before{content:"❝";position:absolute;top:.75rem;right:1.1rem;font-size:2.5rem;color:var(--bd2);line-height:1;font-family:Georgia,serif}
+    .review-stars{display:flex;gap:2px;margin-bottom:.875rem}
+    .review-stars span{color:var(--gold2);font-size:.8rem}
+    .review-text{font-size:.83rem;color:var(--fg2);line-height:1.75;margin-bottom:1.25rem;font-style:italic}
+    .review-author{display:flex;align-items:center;gap:.65rem}
+    .review-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--bg3),var(--bg4));border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .review-name{font-size:.8rem;font-weight:600}
+    .review-meta{font-size:.68rem;color:var(--fg3);margin-top:.1rem;letter-spacing:.04em}
+
+    /* ════ RESERVATION ════ */
+    .res-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+    @media(max-width:820px){.res-layout{grid-template-columns:1fr}}
+    .res-info{padding-top:.5rem}
+    .res-info-items{display:flex;flex-direction:column;gap:1.25rem;margin-top:2rem}
+    .res-info-item{display:flex;align-items:flex-start;gap:.875rem}
+    .res-info-icon{width:36px;height:36px;border-radius:var(--radius-sm);background:color-mix(in oklab,var(--accent) 12%,transparent);border:1px solid color-mix(in oklab,var(--accent) 25%,transparent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+    .res-info-icon svg{color:var(--accent)}
+    .res-info-label{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);font-weight:600;margin-bottom:.2rem}
+    .res-info-val{font-size:.88rem;color:var(--fg2);line-height:1.6}
+    .res-form{display:flex;flex-direction:column;gap:.875rem;background:var(--card);border:1px solid var(--bd);border-radius:var(--radius-xl);padding:2rem}
+    .res-row{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
+    @media(max-width:460px){.res-row{grid-template-columns:1fr}}
+    .form-group label{display:block;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);margin-bottom:.35rem;font-weight:600}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:.65rem .9rem;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--radius-sm);color:var(--fg);font-size:.87rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 14%,transparent)}
+    .form-group input::placeholder{color:var(--fg4)}.form-group textarea::placeholder{color:var(--fg4)}
+    .form-group select option{background:var(--bg2)}
+    .form-group textarea{resize:vertical;min-height:80px;line-height:1.6}
+    .res-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.8rem;border-radius:9999px;background:var(--accent);color:#fff;font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;transition:background .2s,transform .15s,box-shadow .2s;margin-top:.25rem}
+    .res-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px -8px var(--accent)}
+    #res-success{display:none;text-align:center;padding:3rem 2rem;background:var(--card);border:1px solid color-mix(in oklab,var(--green) 35%,transparent);border-radius:var(--radius-xl);animation:fadeIn .5s ease}
+    @keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+    .res-success-icon{font-size:3rem;margin-bottom:1rem;animation:pop .4s cubic-bezier(.34,1.56,.64,1) .1s both}
+    @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+    /* ════ FOOTER ════ */
+    footer{background:var(--bg2);border-top:1px solid var(--bd);padding:4.5rem 2.5rem 2rem}
+    @media(max-width:600px){footer{padding:3rem 1.25rem 1.5rem}}
+    .footer-grid{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto}
+    @media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
+    @media(max-width:480px){.footer-grid{grid-template-columns:1fr}}
+    .footer-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+    .footer-logo-icon{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+    .footer-logo-text{font-size:.88rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .footer-desc{font-size:.8rem;color:var(--fg3);line-height:1.75;max-width:280px;margin-bottom:1.5rem}
+    .footer-socials{display:flex;gap:.6rem}
+    .footer-social-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--bd);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--fg3);transition:color .2s,border-color .2s,background .2s;text-decoration:none;font-size:.72rem;font-weight:700}
+    .footer-social-btn:hover{color:var(--fg);border-color:var(--bd3);background:var(--card3)}
+    .footer-col-title{font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:var(--fg4);font-weight:700;margin-bottom:1.1rem}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+    .footer-col ul li a{color:var(--fg3);text-decoration:none;font-size:.8rem;transition:color .2s;display:flex;align-items:center;gap:.35rem}
+    .footer-col ul li a:hover{color:var(--fg2)}
+    .footer-bottom{max-width:1100px;margin:3rem auto 0;padding-top:1.5rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+    .footer-copy{font-size:.72rem;color:var(--fg4)}
+    .footer-copy a{color:var(--fg3);text-decoration:none;transition:color .2s}.footer-copy a:hover{color:var(--fg2)}
+
+    /* ════ GLOBAL BUTTONS ════ */
+    [data-dish]{position:absolute;left:0;top:0;cursor:pointer;border:none;background:none;padding:0;border-radius:50%;outline:none}
+    [data-dish]:focus-visible{outline:2px solid var(--ring);outline-offset:4px}
+
+    /* ════ TOAST ════ */
+    #toast{position:fixed;bottom:5.5rem;right:1.75rem;z-index:999;background:var(--card2);border:1px solid var(--bd3);border-radius:var(--radius);padding:.7rem 1.1rem;font-size:.82rem;color:var(--fg);box-shadow:0 12px 40px rgba(0,0,0,.6);display:flex;align-items:center;gap:.5rem;transition:opacity .35s,translate .35s;opacity:0;translate:0 12px;pointer-events:none}
+    #toast.show{opacity:1;translate:0 0}
+    #toast-icon{color:var(--green)}
+
+    /* ════ ORDER FAB ════ */
+    #order-fab{position:fixed;bottom:1.75rem;left:1.75rem;z-index:99;display:flex;align-items:center;gap:.55rem;padding:.55rem 1rem;border-radius:9999px;background:var(--card2);border:1px solid var(--bd3);color:var(--fg2);font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.4);letter-spacing:.04em}
+    #order-fab:hover{background:var(--card3);border-color:var(--bd);color:var(--fg);box-shadow:0 6px 28px rgba(0,0,0,.5)}
+    .fab-badge{min-width:18px;height:18px;padding:0 5px;border-radius:9999px;background:var(--accent);color:#fff;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+    .fab-badge.bump{transform:scale(1.4)}
+
+    /* ════ SAKURA AI CHAT WIDGET ════ */
+    #ai-fab{position:fixed;bottom:1.75rem;right:1.75rem;z-index:300;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.5),0 0 0 0 color-mix(in oklab,var(--accent) 40%,transparent);transition:transform .2s,box-shadow .2s;font-size:1.3rem}
+    #ai-fab:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(0,0,0,.6),0 0 0 6px color-mix(in oklab,var(--accent) 18%,transparent)}
+    #ai-fab.open{transform:scale(0.92)}
+    #ai-fab-dot{position:absolute;top:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg);animation:dot-pulse 2.4s ease-in-out infinite}
+    @keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+    #ai-panel{position:fixed;bottom:calc(1.75rem + 64px);right:1.75rem;z-index:300;width:min(380px,calc(100vw - 2rem));background:var(--card);border:1px solid var(--bd2);border-radius:var(--radius-xl);box-shadow:0 24px 64px rgba(0,0,0,.7);display:flex;flex-direction:column;overflow:hidden;transition:opacity .25s,translate .25s,scale .25s;transform-origin:bottom right}
+    #ai-panel:not(.open){opacity:0;translate:0 12px;scale:.97;pointer-events:none}
+    #ai-panel.open{opacity:1;translate:0 0;scale:1}
+
+    #ai-header{display:flex;align-items:center;gap:.65rem;padding:.9rem 1rem .9rem 1.1rem;border-bottom:1px solid var(--bd);background:var(--card2);flex-shrink:0}
+    #ai-header-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+    #ai-header-info{flex:1;min-width:0}
+    #ai-header-name{font-size:.82rem;font-weight:700;letter-spacing:.01em}
+    #ai-header-status{font-size:.65rem;color:var(--green);letter-spacing:.06em;display:flex;align-items:center;gap:.3rem}
+    #ai-header-close{background:none;border:none;color:var(--fg3);cursor:pointer;padding:.25rem;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s}
+    #ai-header-close:hover{color:var(--fg);background:var(--bg3)}
+
+    #ai-messages{flex:1;overflow-y:auto;padding:.875rem 1rem;display:flex;flex-direction:column;gap:.625rem;min-height:260px;max-height:360px;scroll-behavior:smooth}
+    #ai-messages::-webkit-scrollbar{width:3px}#ai-messages::-webkit-scrollbar-track{background:transparent}#ai-messages::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:99px}
+
+    .ai-msg{display:flex;flex-direction:column;gap:.2rem;max-width:88%;animation:msg-in .22s ease}
+    @keyframes msg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .ai-msg.user{align-self:flex-end;align-items:flex-end}
+    .ai-msg.bot{align-self:flex-start;align-items:flex-start}
+    .ai-bubble{padding:.55rem .8rem;border-radius:1.1rem;font-size:.82rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+    .ai-msg.user .ai-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:.3rem}
+    .ai-msg.bot .ai-bubble{background:var(--bg3);color:var(--fg);border:1px solid var(--bd);border-bottom-left-radius:.3rem}
+    .ai-msg.bot .ai-bubble.thinking{color:var(--fg3);font-style:italic}
+    .ai-bubble b,.ai-bubble strong{font-weight:700;color:inherit}
+    .ai-time{font-size:.58rem;color:var(--fg4);padding:0 .2rem}
+
+    #ai-suggestions{display:flex;flex-wrap:wrap;gap:.35rem;padding:.5rem 1rem .25rem;flex-shrink:0}
+    .ai-chip{font-size:.68rem;padding:.3rem .65rem;border-radius:9999px;border:1px solid var(--bd2);background:var(--bg2);color:var(--fg3);cursor:pointer;transition:border-color .15s,color .15s,background .15s;white-space:nowrap;letter-spacing:.02em}
+    .ai-chip:hover{border-color:var(--accent);color:var(--fg);background:color-mix(in oklab,var(--accent) 8%,transparent)}
+
+    #ai-form{display:flex;align-items:flex-end;gap:.5rem;padding:.75rem 1rem;border-top:1px solid var(--bd);flex-shrink:0;background:var(--card)}
+    #ai-input{flex:1;padding:.55rem .75rem;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--radius);color:var(--fg);font-size:.82rem;font-family:inherit;outline:none;resize:none;max-height:100px;line-height:1.5;transition:border-color .2s}
+    #ai-input:focus{border-color:color-mix(in oklab,var(--accent) 60%,var(--bd2))}
+    #ai-input::placeholder{color:var(--fg4)}
+    #ai-send{width:34px;height:34px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,transform .15s;color:#fff}
+    #ai-send:hover{background:var(--accent2);transform:scale(1.08)}
+    #ai-send:disabled{background:var(--bd3);cursor:not-allowed;transform:none}
+
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav id="navbar">
+  <a href="#top" class="nav-logo">
+    <span class="nav-logo-icon">🌸</span>
+    <div>
+      <div class="nav-logo-text">Sakura Kaiten</div>
+      <div class="nav-logo-sub">Japanese Restaurant</div>
+    </div>
+  </a>
+  <div class="nav-center">
+    <a href="#menu">Menu</a>
+    <a href="#about">About</a>
+    <a href="#chefs">Chefs</a>
+    <a href="#experience">Experience</a>
+    <a href="#reviews">Reviews</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-phone">
+      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 3a1 1 0 0 1 1-1h2l1 3-1.5 1.5a11 11 0 0 0 4 4L10 9l3 1v2a1 1 0 0 1-1 1A13 13 0 0 1 2 3Z"/></svg>
+      (021) 5500-8899
+    </span>
+    <a href="#reservation" class="nav-cta">Reserve</a>
+  </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ════ MOBILE MENU ════ -->
+<div id="mobile-menu">
+  <a href="#menu" onclick="toggleMobile()">Menu Belt</a>
+  <a href="#about" onclick="toggleMobile()">Our Story</a>
+  <a href="#chefs" onclick="toggleMobile()">The Chefs</a>
+  <a href="#experience" onclick="toggleMobile()">Experience</a>
+  <a href="#reviews" onclick="toggleMobile()">Reviews</a>
+  <a href="#reservation" class="mob-cta" onclick="toggleMobile()">Book a Table</a>
+</div>
+
+<!-- ════ ORDER FAB ════ -->
+<button id="order-fab" onclick="document.getElementById('reservation').scrollIntoView({behavior:'smooth'})">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+  </svg>
+  Order
+  <span class="fab-badge" id="fab-count">0</span>
+</button>
+
+<!-- ════ TOAST ════ -->
+<div id="toast">
+  <svg id="toast-icon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>
+  <span id="toast-msg">Added to order!</span>
+</div>
+
+<div id="root" style="display:none"></div>
+
+<!-- ════ SAKURA AI CHAT WIDGET ════ -->
+<div id="ai-panel" role="dialog" aria-label="Chat dengan Sakura AI" aria-modal="false">
+  <div id="ai-header">
+    <div id="ai-header-avatar">🌸</div>
+    <div id="ai-header-info">
+      <div id="ai-header-name">Sakura AI Assistant</div>
+      <div id="ai-header-status">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>
+        Online &middot; IBM Bob powered
+      </div>
+    </div>
+    <button id="ai-header-close" aria-label="Tutup chat" onclick="toggleAI()">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+    </button>
+  </div>
+  <div id="ai-messages" aria-live="polite" aria-atomic="false"></div>
+  <div id="ai-suggestions">
+    <button class="ai-chip" onclick="aiChip(this)">🍣 Rekomendasi hari ini</button>
+    <button class="ai-chip" onclick="aiChip(this)">⚠️ Saya alergi shellfish</button>
+    <button class="ai-chip" onclick="aiChip(this)">💰 Menu under $5</button>
+    <button class="ai-chip" onclick="aiChip(this)">📅 Cara reservasi</button>
+  </div>
+  <form id="ai-form" onsubmit="aiSubmit(event)">
+    <textarea id="ai-input" placeholder="Tanya Sakura…" rows="1" aria-label="Pesan untuk Sakura AI"></textarea>
+    <button id="ai-send" type="submit" aria-label="Kirim">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8h11M9 4l4.5 4L9 12"/></svg>
+    </button>
+  </form>
+</div>
+
+<button id="ai-fab" aria-label="Chat dengan Sakura AI" onclick="toggleAI()">
+  🌸
+  <span id="ai-fab-dot" aria-hidden="true"></span>
+</button>
+
+<!-- ════ HERO ════ -->
+<section class="hero" id="top">
+  <div class="hero-noise"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-left">
+    <div class="hero-tag">
+      <span class="hero-tag-dot"></span>
+      Est. 1998 &nbsp;·&nbsp; Jakarta, Indonesia
+    </div>
+    <h1 class="hero-h1">
+      <em>Authentic</em>
+      <strong>Kaiten Sushi</strong>
+      <span class="line3">Experience the belt</span>
+    </h1>
+    <p class="hero-p">Fresh-crafted plates circle past you on a moving belt. Stop anything that catches your eye, click to learn more, and add it to your order — Japan, right on your table.</p>
+    <div class="hero-btns">
+      <a href="#menu" class="btn-red">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 5l4 3-4 3"/></svg>
+        View the Belt
+      </a>
+      <a href="#reservation" class="btn-ghost">Reserve a Table</a>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-num">25<sup>+</sup></div>
+        <div class="hero-meta-label">Years open</div>
+      </div>
+      <div class="hero-meta-item" style="padding-left:2.5rem;border-left:1px solid var(--bd2)">
+        <div class="hero-meta-num">40<sup>+</sup></div>
+        <div class="hero-meta-label">Dishes daily</div>
+      </div>
+      <div class="hero-meta-item" style="padding-left:2.5rem;border-left:1px solid var(--bd2)">
+        <div class="hero-meta-num">4.9★</div>
+        <div class="hero-meta-label">Guest rating</div>
+      </div>
+      <div class="hero-meta-item" style="padding-left:2.5rem;border-left:1px solid var(--bd2)">
+        <div class="hero-meta-num">2×</div>
+        <div class="hero-meta-label">Weekly delivery</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="hero-plate-ring"></div>
+      <div class="hero-plate-ring"></div>
+      <div class="hero-plate-ring"></div>
+      <div class="hero-center">🍣</div>
+      <div class="hero-orbit">🐟</div>
+      <div class="hero-orbit">🥢</div>
+      <div class="hero-orbit">🍙</div>
+      <div class="hero-orbit">🍜</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    Scroll
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ════ FEATURES MARQUEE ════ -->
+<div class="features-strip">
+  <div class="features-track">
+    <span class="feat-item"><span class="feat-dot"></span> Fresh Fish Twice a Week</span>
+    <span class="feat-item"><span class="feat-dot"></span> 40+ Belt Dishes</span>
+    <span class="feat-item"><span class="feat-dot"></span> Omakase Counter</span>
+    <span class="feat-item"><span class="feat-dot"></span> Private Tatami Room</span>
+    <span class="feat-item"><span class="feat-dot"></span> 25 Years of Craft</span>
+    <span class="feat-item"><span class="feat-dot"></span> Tsukiji-Sourced Fish</span>
+    <span class="feat-item"><span class="feat-dot"></span> Colour-Coded Pricing</span>
+    <span class="feat-item"><span class="feat-dot"></span> Michelin-Trained Chefs</span>
+    <!-- dupe for seamless loop -->
+    <span class="feat-item"><span class="feat-dot"></span> Fresh Fish Twice a Week</span>
+    <span class="feat-item"><span class="feat-dot"></span> 40+ Belt Dishes</span>
+    <span class="feat-item"><span class="feat-dot"></span> Omakase Counter</span>
+    <span class="feat-item"><span class="feat-dot"></span> Private Tatami Room</span>
+    <span class="feat-item"><span class="feat-dot"></span> 25 Years of Craft</span>
+    <span class="feat-item"><span class="feat-dot"></span> Tsukiji-Sourced Fish</span>
+    <span class="feat-item"><span class="feat-dot"></span> Colour-Coded Pricing</span>
+    <span class="feat-item"><span class="feat-dot"></span> Michelin-Trained Chefs</span>
+  </div>
+</div>
+
+<!-- ════ KAITEN BELT (React) ════ -->
+<div class="belt-wrap" id="menu">
+  <div id="belt-root"></div>
+</div>
+
+<!-- ════ MENU HIGHLIGHTS ════ -->
+<section class="section" style="background:var(--bg2)" id="highlights">
+  <div class="section-inner">
+    <div class="label reveal">Popular Picks</div>
+    <h2 class="title reveal delay-1">Highlights from the <b>belt</b></h2>
+    <p class="subtitle reveal delay-2">Every plate below is also on the moving belt above — hover to grab it live, or browse here.</p>
+    <div class="menu-grid">
+      <div class="menu-card reveal delay-1">
+        <div class="menu-card-badge">Chef's Pick</div>
+        <div class="menu-card-img">🍣</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Salmon Nigiri</div>
+          <div class="menu-card-desc">Fresh Atlantic salmon over warm seasoned rice, with pickled ginger on a yellow plate.</div>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">$4.20</span>
+            <div class="menu-card-tier"><span class="filled"></span><span class="filled"></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card reveal delay-2">
+        <div class="menu-card-img">🐟</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Tuna Nigiri</div>
+          <div class="menu-card-desc">Lean red tuna on warm rice, served on a blue plate — the connoisseur's choice.</div>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">$6.80</span>
+            <div class="menu-card-tier"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card reveal delay-3">
+        <div class="menu-card-badge">Most Loved</div>
+        <div class="menu-card-img">🍱</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Dragon Roll</div>
+          <div class="menu-card-desc">Shrimp tempura roll draped in avocado, finished with eel sauce on a purple plate.</div>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">$8.50</span>
+            <div class="menu-card-tier"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span><span class="filled"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-card reveal delay-4">
+        <div class="menu-card-img">🍡</div>
+        <div class="menu-card-body">
+          <div class="menu-card-name">Mochi Ice Cream</div>
+          <div class="menu-card-desc">Matcha and strawberry mochi ice cream, one of each — our signature sweet finish.</div>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">$5.40</span>
+            <div class="menu-card-tier"><span class="filled"></span><span class="filled"></span><span class="filled"></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ ABOUT ════ -->
+<section class="section" id="about" style="background:var(--bg)">
+  <div class="section-inner about-grid">
+    <div class="about-visual reveal-left">
+      <div class="about-frame">🍣</div>
+      <div class="about-badge">
+        <div class="about-badge-num">25</div>
+        <div class="about-badge-text">Years of craft</div>
+      </div>
+      <div class="about-award">
+        <div class="about-award-icon">⭐</div>
+        <div class="about-award-text">Michelin Recommended 2023</div>
+      </div>
+    </div>
+    <div class="about-text reveal-right">
+      <div class="label">Our Story</div>
+      <div class="ornament"><div class="ornament-line"></div><div class="ornament-mark">✦</div></div>
+      <h2 class="title">Born from a <b>love of tradition</b></h2>
+      <p class="subtitle">Sakura Kaiten was founded in 1998 by chef Hiroshi Tanaka, who brought the kaiten-zushi belt concept from Osaka to Jakarta. Every piece we serve honours decades of Japanese culinary tradition — fish flown in twice weekly from trusted Tsukiji partners.</p>
+      <ul class="check-list">
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l2.5 3 5.5-6"/></svg></span>
+          Fish sourced twice weekly from Tsukiji partner markets
+        </li>
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l2.5 3 5.5-6"/></svg></span>
+          Sushi rice seasoned with 30-year-aged Kyoto rice vinegar
+        </li>
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l2.5 3 5.5-6"/></svg></span>
+          Belt plates colour-coded by price — total transparency
+        </li>
+        <li>
+          <span class="check-icon"><svg viewBox="0 0 12 12" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l2.5 3 5.5-6"/></svg></span>
+          Private omakase counter for up to 8 guests nightly
+        </li>
+      </ul>
+      <div style="margin-top:2rem;display:flex;gap:.75rem;flex-wrap:wrap">
+        <a href="#reservation" class="btn-red">Reserve Your Seat</a>
+        <a href="#experience" class="btn-ghost">Omakase Experience →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CHEFS ════ -->
+<section class="section" id="chefs" style="background:var(--bg2)">
+  <div class="section-inner" style="text-align:center">
+    <div class="label reveal">Behind the Belt</div>
+    <h2 class="title reveal delay-1">Meet our <b>head chefs</b></h2>
+    <p class="subtitle reveal delay-2" style="margin:0 auto">Three masters, one philosophy: respect the fish, honour the craft, serve with pride.</p>
+    <div class="chefs-grid">
+      <div class="chef-card reveal delay-1">
+        <div class="chef-photo">
+          👨‍🍳
+          <div class="chef-overlay"><div class="chef-overlay-text">30 Years · Osaka Graduate</div></div>
+        </div>
+        <div class="chef-body">
+          <div class="chef-name">Hiroshi Tanaka</div>
+          <div class="chef-role">Head Sushi Master</div>
+          <div class="chef-origin">Osaka, Japan</div>
+          <div class="chef-bio">Three decades of craft, refined across Osaka, Tokyo, and Singapore before founding Sakura Kaiten. His nigiri technique is considered unmatched by regulars.</div>
+          <div class="chef-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        </div>
+      </div>
+      <div class="chef-card reveal delay-2">
+        <div class="chef-photo">
+          👩‍🍳
+          <div class="chef-overlay"><div class="chef-overlay-text">Former Michelin Sous-Chef</div></div>
+        </div>
+        <div class="chef-body">
+          <div class="chef-name">Yuki Matsumoto</div>
+          <div class="chef-role">Kaiseki Specialist</div>
+          <div class="chef-origin">Kyoto, Japan</div>
+          <div class="chef-bio">Former sous-chef at a Michelin-starred kaiseki restaurant in Kyoto. Yuki oversees seasonal small plates and the omakase tasting menu each evening.</div>
+          <div class="chef-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        </div>
+      </div>
+      <div class="chef-card reveal delay-3">
+        <div class="chef-photo">
+          🧑‍🍳
+          <div class="chef-overlay"><div class="chef-overlay-text">12 Years · Signature Rolls</div></div>
+        </div>
+        <div class="chef-body">
+          <div class="chef-name">Kenji Watanabe</div>
+          <div class="chef-role">Tempura & Rolls</div>
+          <div class="chef-origin">Tokyo, Japan</div>
+          <div class="chef-bio">Master of the golden batter. Kenji's dragon roll has never left the belt in 12 years — and for good reason. His tempura technique is studied by our apprentices.</div>
+          <div class="chef-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ EXPERIENCE CTA ════ -->
+<section class="section" id="experience" style="background:var(--bg)">
+  <div class="section-inner">
+    <div class="exp-wrap reveal">
+      <div class="exp-glow"></div>
+      <div class="exp-left">
+        <div class="label">Private Dining</div>
+        <h2 class="title" style="margin-top:.5rem">The <b>Omakase</b><br>Experience</h2>
+        <p class="subtitle" style="margin-top:.75rem">Trust the chef. Our omakase counter seats up to 8 guests for an intimate multi-course journey guided entirely by Chef Hiroshi — 12 to 16 courses, paired sake, and conversation across the pass.</p>
+        <ul class="exp-list">
+          <li>12–16 seasonal courses, fully chef-curated</li>
+          <li>Sake & shochu pairing available</li>
+          <li>Available Tue–Sat, 18:00 & 20:30 seatings</li>
+          <li>Minimum 48h advance reservation</li>
+        </ul>
+        <div style="margin-top:2rem"><a href="#reservation" class="btn-red">Book Omakase →</a></div>
+      </div>
+      <div class="exp-right">
+        <div class="exp-price-card">
+          <div><div class="exp-price-name">Kaiten Belt Lunch</div><div class="exp-price-sub">Mon–Fri · 11:30–14:30</div></div>
+          <div class="exp-price-val">From $12</div>
+        </div>
+        <div class="exp-price-card">
+          <div><div class="exp-price-name">Kaiten Belt Dinner</div><div class="exp-price-sub">Daily · 18:00–22:00</div></div>
+          <div class="exp-price-val">From $18</div>
+        </div>
+        <div class="exp-price-card" style="border-color:color-mix(in oklab,var(--gold) 30%,transparent)">
+          <div><div class="exp-price-name">Omakase Counter</div><div class="exp-price-sub">Tue–Sat · 2 seatings</div></div>
+          <div class="exp-price-val" style="color:var(--gold2)">$120 pp</div>
+        </div>
+        <div class="exp-price-card">
+          <div><div class="exp-price-name">Tatami Private Room</div><div class="exp-price-sub">Up to 12 guests</div></div>
+          <div class="exp-price-val">From $400</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ REVIEWS ════ -->
+<section class="section" id="reviews" style="background:var(--bg2)">
+  <div class="section-inner">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:.5rem">
+      <div>
+        <div class="label reveal">What guests say</div>
+        <h2 class="title reveal delay-1">Real <b>reviews</b></h2>
+      </div>
+      <div class="reveal" style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--fg2)">
+        <span style="font-size:1.5rem;font-weight:800;letter-spacing:-.04em;color:var(--fg)">4.9</span>
+        <div>
+          <div style="display:flex;gap:2px;margin-bottom:.2rem"><span style="color:var(--gold2)">★</span><span style="color:var(--gold2)">★</span><span style="color:var(--gold2)">★</span><span style="color:var(--gold2)">★</span><span style="color:var(--gold2)">★</span></div>
+          <div style="font-size:.7rem;color:var(--fg3)">Based on 2,400+ reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal delay-1">
+        <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="review-text">"The belt is genuinely mesmerizing. I ended up ordering way more than I planned — every plate looked better than the last. The salmon nigiri is the best I've had outside of Japan."</p>
+        <div class="review-author">
+          <div class="review-avatar">👤</div>
+          <div><div class="review-name">Amara Lestari</div><div class="review-meta">Google · 3 weeks ago</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal delay-2">
+        <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="review-text">"Came for the omakase counter and left speechless. Chef Hiroshi walked us through every course with such passion. Worth every rupiah. Already booked again for next month."</p>
+        <div class="review-author">
+          <div class="review-avatar">👤</div>
+          <div><div class="review-name">Rafi Adhitama</div><div class="review-meta">Zomato · 1 month ago</div></div>
+        </div>
+      </div>
+      <div class="review-card reveal delay-3">
+        <div class="review-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="review-text">"The dragon roll alone is worth the trip across town. Perfectly balanced, not too heavy, and that eel sauce is addictive. The atmosphere is calm and sophisticated — perfect date night."</p>
+        <div class="review-author">
+          <div class="review-avatar">👤</div>
+          <div><div class="review-name">Siti Nurhayati</div><div class="review-meta">TripAdvisor · 2 months ago</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ RESERVATION ════ -->
+<section class="section" id="reservation" style="background:var(--bg)">
+  <div class="section-inner">
+    <div class="res-layout">
+      <div class="res-info reveal-left">
+        <div class="label">Book a table</div>
+        <div class="ornament"><div class="ornament-line"></div><div class="ornament-mark">✦</div></div>
+        <h2 class="title">Reserve your<br><b>seat at the belt</b></h2>
+        <p class="subtitle">We confirm within 2 hours. Walk-ins welcome for the belt — reservations recommended for omakase and private rooms.</p>
+        <div class="res-info-items">
+          <div class="res-info-item">
+            <div class="res-info-icon">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 1.5A6.5 6.5 0 1 1 1.5 8 6.5 6.5 0 0 1 8 1.5zm0 3.5v3l2 2"/></svg>
+            </div>
+            <div>
+              <div class="res-info-label">Opening hours</div>
+              <div class="res-info-val">Mon–Fri: 11:30–22:00<br>Sat–Sun: 11:00–23:00</div>
+            </div>
+          </div>
+          <div class="res-info-item">
+            <div class="res-info-icon">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 3a1 1 0 0 1 1-1h2l1 3-1.5 1.5a11 11 0 0 0 4 4L10 9l3 1v2a1 1 0 0 1-1 1A13 13 0 0 1 2 3Z"/></svg>
+            </div>
+            <div>
+              <div class="res-info-label">Reservations & info</div>
+              <div class="res-info-val">(021) 5500-8899<br>hello@sakurakaiten.id</div>
+            </div>
+          </div>
+          <div class="res-info-item">
+            <div class="res-info-icon">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 1.5c-2.6 0-4.5 2-4.5 4.2 0 3.1 4.5 8.8 4.5 8.8s4.5-5.7 4.5-8.8C12.5 3.5 10.6 1.5 8 1.5z"/><circle cx="8" cy="6" r="1.5"/></svg>
+            </div>
+            <div>
+              <div class="res-info-label">Location</div>
+              <div class="res-info-val">Jl. Jend. Sudirman No. 88<br>Jakarta Selatan 12190</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <form class="res-form" id="res-form" onsubmit="submitReservation(event)">
+          <div class="res-row">
+            <div class="form-group"><label>First name</label><input type="text" placeholder="Hiroshi" required /></div>
+            <div class="form-group"><label>Last name</label><input type="text" placeholder="Tanaka" required /></div>
+          </div>
+          <div class="res-row">
+            <div class="form-group"><label>Email</label><input type="email" placeholder="you@example.com" required /></div>
+            <div class="form-group"><label>Phone</label><input type="tel" placeholder="+62 812 3456 7890" /></div>
+          </div>
+          <div class="res-row">
+            <div class="form-group"><label>Date</label><input type="date" required /></div>
+            <div class="form-group"><label>Time</label>
+              <select required>
+                <option value="">Select time…</option>
+                <optgroup label="Lunch">
+                  <option>11:30</option><option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option>
+                </optgroup>
+                <optgroup label="Dinner">
+                  <option>18:00</option><option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div class="res-row">
+            <div class="form-group"><label>Guests</label>
+              <select required>
+                <option>1 guest</option><option>2 guests</option><option>3 guests</option><option>4 guests</option>
+                <option>5–8 (private counter)</option><option>9–12 (tatami room)</option><option>13+ (event enquiry)</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Seating preference</label>
+              <select>
+                <option>Kaiten belt</option><option>Omakase counter</option><option>Tatami private room</option><option>No preference</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>Special requests</label><textarea placeholder="Allergies, celebrations, dietary requirements, special arrangements…"></textarea></div>
+          <button type="submit" class="res-btn">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>
+            Confirm Reservation
+          </button>
+        </form>
+        <div id="res-success">
+          <div class="res-success-icon">🌸</div>
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:.5rem">Reservation received!</h3>
+          <p style="font-size:.875rem;color:var(--fg2);line-height:1.7">We'll confirm your table via email and phone within 2 hours.<br>Can't wait to see you at the belt!</p>
+          <a href="#menu" class="btn-red" style="margin-top:1.5rem;display:inline-flex">Browse the Menu ↑</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="footer-logo-icon">🌸</span>
+        <span class="footer-logo-text">Sakura Kaiten</span>
+      </div>
+      <p class="footer-desc">Authentic kaiten-zushi since 1998. Every plate crafted fresh, every visit a journey to Japan — right here in Jakarta.</p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social-btn" title="Instagram">IG</a>
+        <a href="#" class="footer-social-btn" title="TikTok">TK</a>
+        <a href="#" class="footer-social-btn" title="Twitter/X">𝕏</a>
+        <a href="#" class="footer-social-btn" title="Facebook">FB</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Visit Us</div>
+      <ul>
+        <li><a href="#">Jl. Sudirman No. 88</a></li>
+        <li><a href="#">Jakarta Selatan 12190</a></li>
+        <li><a href="#" style="margin-top:.25rem;color:var(--fg4)">Mon–Fri 11:30–22:00</a></li>
+        <li><a href="#" style="color:var(--fg4)">Sat–Sun 11:00–23:00</a></li>
+        <li><a href="tel:02155008899" style="margin-top:.25rem">(021) 5500-8899</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Menu</div>
+      <ul>
+        <li><a href="#menu">Nigiri & Sashimi</a></li>
+        <li><a href="#menu">Maki Rolls</a></li>
+        <li><a href="#menu">Temaki Cones</a></li>
+        <li><a href="#menu">Hot Dishes</a></li>
+        <li><a href="#menu">Desserts & Mochi</a></li>
+        <li><a href="#menu">Sake & Drinks</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Company</div>
+      <ul>
+        <li><a href="#about">Our Story</a></li>
+        <li><a href="#chefs">Meet the Chefs</a></li>
+        <li><a href="#experience">Omakase</a></li>
+        <li><a href="#reservation">Reservations</a></li>
+        <li><a href="#">Gift Cards</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press & Media</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2024 Sakura Kaiten. All rights reserved.</p>
+    <p class="footer-copy"><a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Cookie Policy</a></p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ── mobile menu ── */
+function toggleMobile(){
+  const btn=document.getElementById("hamburger"),menu=document.getElementById("mobile-menu");
+  btn.classList.toggle("open");menu.classList.toggle("open");
+  document.body.style.overflow=menu.classList.contains("open")?"hidden":"";
+}
+/* ── nav scroll ── */
+window.addEventListener("scroll",()=>{
+  document.getElementById("navbar").classList.toggle("scrolled",window.scrollY>40);
+  /* active link highlight */
+  const sections=["menu","highlights","about","chefs","experience","reviews","reservation"];
+  const links=document.querySelectorAll(".nav-center a");
+  let current="";
+  sections.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-100)current=id});
+  links.forEach(a=>{const href=a.getAttribute("href").replace("#","");a.style.color=href===current?"var(--fg)":"var(--fg3)"});
+},{passive:true});
+/* ── scroll reveal ── */
+function initReveal(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");obs.unobserve(e.target)}})},{threshold:.12,rootMargin:"0px 0px -40px 0px"});
+  document.querySelectorAll(".reveal,.reveal-left,.reveal-right").forEach(el=>obs.observe(el));
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initReveal);else initReveal();
+/* ── toast ── */
+let toastTimer=0;
+function showToast(msg,ok=true){
+  const t=document.getElementById("toast"),m=document.getElementById("toast-msg"),icon=document.getElementById("toast-icon");
+  m.textContent=msg;icon.style.color=ok?"var(--green)":"var(--accent)";
+  t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
+}
+/* ── reservation ── */
+function submitReservation(e){
+  e.preventDefault();
+  const btn=e.target.querySelector(".res-btn");
+  btn.textContent="Sending…";btn.disabled=true;
+  setTimeout(()=>{
+    document.getElementById("res-form").style.display="none";
+    document.getElementById("res-success").style.display="block";
+    document.getElementById("res-success").scrollIntoView({behavior:"smooth",block:"center"});
+    showToast("Reservation received! We'll confirm shortly.","ok");
+  },900);
+}
+/* ── order count ── */
+let orderCount=0;
+function addOrder(name){
+  orderCount++;
+  const badge=document.getElementById("fab-count");
+  badge.textContent=orderCount;
+  badge.classList.add("bump");
+  setTimeout(()=>badge.classList.remove("bump"),300);
+  showToast(`${name} added to your order!`);
+  /* beri tahu AI agent bahwa item ditambahkan ke order */
+  aiNotifyOrder(name);
+}
+</script>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAKURA AI CHAT
+   Primary : Gemini API  (native CORS, terbukti bekerja)
+   Fallback: Cyclocerine (OpenAI-compatible, model: asist)
+   Reserve : IBM Bob     (dipakai jika Gemini gagal — endpoint belum publik,
+                          kemungkinan berfungsi jika IBM membuka akses)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Gemini — primary */
+const GEMINI_KEY   = "AQ.Ab8RN6I6ZUqt9swWZL8B0xxD4p7fF6Eu0JKsarXX2kq_YXqNkg";
+/* Urutan model: kalau yang pertama overload (503/429) atau tidak ada (404), lanjut ke berikutnya */
+const GEMINI_MODELS = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+const geminiUrl = m => `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`;
+
+/* Cyclocerine — fallback #1 (OpenAI-compatible: POST {base}/chat/completions) */
+const CYCLO_BASE  = "https://ai.cyclocerine.cloud/v1";
+const CYCLO_KEY   = "sk-3cfa530c9492545b-82wzhi-95329910";
+const CYCLO_MODEL = "asist";
+
+/* IBM Bob — reserve (via corsproxy.io ke watsonx endpoint) */
+const AI_BASE     = "https://us-south.ml.cloud.ibm.com/ml/v1/text/chat?version=2024-05-01";
+const AI_ENDPOINT = `https://corsproxy.io/?url=${encodeURIComponent(AI_BASE)}`;
+const AI_MODEL    = "ibm/granite-13b-chat-v2";
+const BOB_API_KEY = "bob_prod_bob-apikey_5iVcNFC2UKEsz5WCJiZR6V4VFpQWCs7GXBhtuBQPK4JqUCk5bk2AG9kW8fhzKmFWbRQDE3HM56nSnEw3b1WSgCi6_YDSrHADYn99RXoAFXHPeLYgwSfpjrfur6QUYFwg2Ttb";
+
+const SAKURA_SYSTEM = `You are Sakura, the AI culinary assistant and virtual sommelier for Sakura Kaiten, an authentic Japanese kaiten-zushi restaurant in Jakarta established in 1998. You speak warmly, knowledgeably, and concisely — like an experienced Japanese waiter who is proud of the craft.
+
+RESTAURANT FACTS:
+- Location: Jl. Jend. Sudirman No. 88, Jakarta Selatan | Phone: (021) 5500-8899
+- Hours: Mon–Fri 11:30–22:00 | Sat–Sun 11:00–23:00
+- Reservation: confirmed within 2 hours; walk-ins welcome for belt seating
+
+SEATING: Kaiten Belt (walk-in) | Omakase Counter (max 8, Tue–Sat 18:00 & 20:30, $120/pp) | Tatami Room (up to 12, from $400)
+
+PLATE TIER COLORS: Tier 1 red $3.20 | Tier 2 gold $4.20 | Tier 3 green $5.40 | Tier 4 blue $6.80 | Tier 5 purple $8.50
+
+MENU (name | price | allergens | details):
+1. Salmon Nigiri | $4.20 | Fish | 2 pcs, Chef's pick
+2. Tuna Nigiri | $6.80 | Fish | 2 pcs
+3. Ebi Nigiri | $4.20 | Shellfish | 2 pcs
+4. California Roll | $5.40 | Shellfish, Fish roe | 4 pcs
+5. Dragon Roll | $8.50 | Shellfish, Wheat | 4 pcs, Chef's pick
+6. Tamago Nigiri | $3.20 | Egg | 2 pcs
+7. Salted Edamame | $3.20 | Soy | 1 bowl, Vegan
+8. Mochi Ice Cream | $5.40 | Milk | 2 pcs, Dessert
+
+RULES:
+- For allergen questions: list all allergens explicitly; only say "confirmed safe" or "contains [allergen]" — never guess
+- For recommendations: ask 1 clarifying question (taste or budget) then suggest max 3 options
+- For unknown info: say "I don't have that right now — please call (021) 5500-8899"
+- Respond in the same language the user writes in (Indonesian or English)
+- Keep answers under 150 words unless listing full menu`;
+
+/* ── State ── */
+let aiHistory  = [];   /* hanya untuk display / append ke UI */
+let apiHistory = [];   /* untuk dikirim ke API: [{role,content}] tanpa system */
+let aiOpen     = false;
+let aiThinking = false;
+
+/* ── Toggle panel ── */
+function toggleAI(){
+  aiOpen = !aiOpen;
+  document.getElementById("ai-panel").classList.toggle("open", aiOpen);
+  document.getElementById("ai-fab").classList.toggle("open", aiOpen);
+  if(aiOpen){
+    if(aiHistory.length === 0)
+      aiAppendBot("Halo! 🌸 Saya Sakura, asisten virtual Sakura Kaiten. Bisa saya bantu dengan rekomendasi menu, info alergen, atau reservasi?");
+    setTimeout(()=>document.getElementById("ai-input")?.focus(), 300);
+  }
+}
+
+/* ── Auto-resize textarea + Enter kirim ── */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const inp = document.getElementById("ai-input");
+  if(!inp) return;
+  inp.addEventListener("input", ()=>{ inp.style.height="auto"; inp.style.height=Math.min(inp.scrollHeight,100)+"px"; });
+  inp.addEventListener("keydown", e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); document.getElementById("ai-form").dispatchEvent(new Event("submit",{bubbles:true,cancelable:true})); }});
+});
+
+/* ── Append pesan ke UI ── */
+function aiAppendMsg(role, text){
+  const box  = document.getElementById("ai-messages");
+  const wrap = document.createElement("div");
+  wrap.className = `ai-msg ${role}`;
+  const bubble = document.createElement("div");
+  bubble.className = "ai-bubble";
+  bubble.textContent = text;
+  const time = document.createElement("div");
+  time.className = "ai-time";
+  time.textContent = new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+  /* apiHistory hanya simpan user & assistant (bukan system note) */
+  if(!text.startsWith("[system note:"))
+    apiHistory.push({ role: role==="user"?"user":"assistant", content: text });
+  return bubble;
+}
+function aiAppendBot(text){ return aiAppendMsg("bot", text); }
+function aiAppendUser(text){ return aiAppendMsg("user", text); }
+
+/* ── Thinking indicator ── */
+function aiShowThinking(){
+  const box = document.getElementById("ai-messages");
+  const wrap = document.createElement("div");
+  wrap.id = "ai-thinking-row";
+  wrap.className = "ai-msg bot";
+  const bubble = document.createElement("div");
+  bubble.className = "ai-bubble thinking";
+  bubble.textContent = "Sakura sedang mengetik…";
+  wrap.appendChild(bubble);
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+function aiHideThinking(){ document.getElementById("ai-thinking-row")?.remove(); }
+
+/* ── Chip shortcut ── */
+function aiChip(btn){
+  const text = btn.textContent.replace(/^[^\w\u00C0-\u024F\u4e00-\u9fff]+/,"").trim();
+  document.getElementById("ai-suggestions").style.display = "none";
+  aiSend(text);
+}
+
+/* ── Submit form ── */
+function aiSubmit(e){
+  e.preventDefault();
+  const inp = document.getElementById("ai-input");
+  const text = inp.value.trim();
+  if(!text || aiThinking) return;
+  inp.value = ""; inp.style.height = "auto";
+  aiSend(text);
+}
+
+/* ── Gemini (primary) → return reply string atau throw ── */
+async function callGemini(messages, model){
+  const systemMsg = messages.find(m => m.role === "system");
+  const chatMsgs  = messages.filter(m => m.role !== "system");
+
+  /* Konversi ke format Gemini:
+     - role "assistant" → "model"
+     - merge turn berurutan dengan role sama (Gemini tidak boleh)
+     - array HARUS dimulai dan diakhiri dengan "user" */
+  const contents = [];
+  for(const m of chatMsgs){
+    const role = m.role === "assistant" ? "model" : "user";
+    const text = m.content || "";
+    if(!text.trim()) continue;
+    if(contents.length > 0 && contents.at(-1).role === role)
+      contents.at(-1).parts[0].text += "\n" + text;
+    else
+      contents.push({ role, parts:[{ text }] });
+  }
+
+  /* Pastikan dimulai dari user */
+  if(!contents.length || contents[0].role !== "user")
+    contents.unshift({ role:"user", parts:[{ text:"halo" }] });
+
+  /* Pastikan diakhiri dengan user (Gemini requirements) */
+  if(contents.at(-1).role !== "user")
+    contents.push({ role:"user", parts:[{ text: chatMsgs.filter(m=>m.role==="user").at(-1)?.content || "halo" }] });
+
+  const body = {
+    /* systemInstruction = field resmi Gemini untuk system prompt */
+    systemInstruction: systemMsg ? { parts:[{ text: systemMsg.content }] } : undefined,
+    contents,
+    generationConfig: { maxOutputTokens:1024 }  /* temperature dihapus: Gemini 3.6+ mengabaikannya & kirim warning deprecation. 1024 biar token thinking nggak makan jatah jawaban */
+  };
+
+  const res = await fetch(geminiUrl(model), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": GEMINI_KEY
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    const e = new Error(`[${model}] ` + (err?.error?.message || `Gemini HTTP ${res.status}`));
+    e.status = res.status;
+    throw e;
+  }
+  const data = await res.json();
+  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if(!reply) throw new Error("Gemini: empty response");
+  return reply.trim();
+}
+
+/* ── Gemini dengan retry + fallback antar model ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function callGeminiResilient(messages){
+  let lastErr;
+  for(const model of GEMINI_MODELS){
+    for(let attempt = 0; attempt < 2; attempt++){
+      try{
+        return await callGemini(messages, model);
+      } catch(e){
+        lastErr = e;
+        console.warn(`Gemini ${model} percobaan ${attempt+1} gagal:`, e.message);
+        const transient = e.status === 503 || e.status === 429 || e.status === 500;
+        if(transient && attempt === 0){ await sleep(1200); continue; }  /* retry sekali di model yang sama */
+        break;                                                         /* pindah ke model berikutnya */
+      }
+    }
+  }
+  throw lastErr;
+}
+
+/* ── Cyclocerine (OpenAI-compatible) → return reply string atau throw ── */
+async function callCyclo(messages){
+  const res = await fetch(`${CYCLO_BASE}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${CYCLO_KEY}`
+    },
+    body: JSON.stringify({ model: CYCLO_MODEL, messages, max_tokens: 1024 })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err?.error?.message || err?.message || `Cyclocerine HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const reply = data?.choices?.[0]?.message?.content;
+  if(!reply) throw new Error("Cyclocerine: empty response");
+  return reply.trim();
+}
+
+/* ── IBM Bob (reserve) → return reply string atau throw ── */
+async function callBob(messages){
+  const res = await fetch(AI_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${BOB_API_KEY}`,
+      "x-cors-api-key": "temp_" + Math.random().toString(36).slice(2)
+    },
+    body: JSON.stringify({ model_id: AI_MODEL, messages, parameters:{ max_new_tokens:400, temperature:0.7 } })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err?.errors?.[0]?.message || err?.message || `IBM Bob HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const reply = data?.choices?.[0]?.message?.content || data?.results?.[0]?.generated_text || data?.output?.text;
+  if(!reply) throw new Error("IBM Bob: empty response");
+  return reply.trim();
+}
+
+/* ── Kirim pesan — primary Gemini, reserve IBM Bob ── */
+async function aiSend(text){
+  aiAppendUser(text);
+  aiThinking = true;
+  document.getElementById("ai-send").disabled = true;
+  aiShowThinking();
+
+  const messages = [
+    { role:"system", content: SAKURA_SYSTEM },
+    ...apiHistory.slice(-20)
+  ];
+
+  try{
+    let reply;
+    let gemMsg = "";
+    try{
+      reply = await callGeminiResilient(messages);
+      console.info("✨ Dijawab oleh Gemini");
+    } catch(gemErr){
+      gemMsg = gemErr.message;
+      console.error("Gemini gagal:", gemErr, "| origin:", location.origin, "| online:", navigator.onLine);
+      let cycloMsg = "";
+      try{
+        reply = await callCyclo(messages);
+        console.info("✨ Dijawab oleh Cyclocerine (fallback)");
+      } catch(cycloErr){
+        cycloMsg = cycloErr.message;
+        console.error("Cyclocerine gagal:", cycloErr);
+        try{
+          reply = await callBob(messages);
+          console.info("✨ Dijawab oleh IBM Bob (reserve)");
+        } catch(bobErr){
+          console.error("IBM Bob gagal:", bobErr);
+          throw new Error("Gemini: " + gemMsg + " | Cyclo: " + cycloMsg + " | Bob: " + bobErr.message + " | origin: " + location.origin);
+        }
+      }
+    }
+    aiHideThinking();
+    aiAppendBot(reply);
+  } catch(err){
+    aiHideThinking();
+    apiHistory.pop();
+    aiAppendBot(`Maaf, semua layanan AI sedang tidak dapat dihubungi.\n(${err.message})\n\nCoba lagi atau hubungi (021) 5500-8899.`);
+  } finally {
+    aiThinking = false;
+    document.getElementById("ai-send").disabled = false;
+  }
+}
+
+/* ── Notifikasi ke AI ketika item ditambahkan ke order ── */
+function aiNotifyOrder(name){
+  if(!aiOpen) return;
+  /* Injeksi context ke apiHistory tanpa menampilkan di UI */
+  apiHistory.push({ role:"user", content:`[Note: user just added "${name}" to their order from the belt]` });
+  aiSend(`Saya baru saja menambahkan ${name} ke pesanan saya.`);
+}
+</script>
+
+<script>
+"use strict";
+/* ─────────────────────────────────────────────────────────────────────────
+   REACT BELT COMPONENT — vanilla React.createElement, no JSX, no Babel
+   ───────────────────────────────────────────────────────────────────────── */
+const h=React.createElement;
+const{useState,useEffect,useLayoutEffect,useRef,useMemo,useCallback,useId}=React;
+const{createPortal}=ReactDOM;
+
+/* constants */
+const SPACING=1.35,CURVE=0.95,BAND=1.22,TILT=0.8,SLAT=0.34;
+const LIFT_Y=-6,LIFT_SCALE=0.08,BACK_SHADE=0.15,CHIP_ROOM=34;
+const WIDE=1024,HOLD=1400,RUN=0,SEEK=1,DRAG=2;
+const LBL={add:"Add to order",close:"Close",previous:"Previous",next:"Next",pause:"Pause belt"};
+const TIERS=[{ring:"var(--c1)",dot:"var(--c1)"},{ring:"var(--c2)",dot:"var(--c2)"},{ring:"var(--c3)",dot:"var(--c3)"},{ring:"var(--c4)",dot:"var(--c4)"},{ring:"var(--c5)",dot:"var(--c5)"}];
+
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function tier(t){return TIERS[clamp(Math.round(t??1),1,5)-1]??TIERS[0]}
+function along(g,u){
+  const{s,r}=g;let t=((u%g.l)+g.l)%g.l;
+  if(t<s)return{x:s/2-t,z:r,nx:0,nz:1,tx:-1,tz:0};t-=s;
+  const arc=Math.PI*r;
+  if(t<arc){const f=t/r,sin=Math.sin(f),cos=Math.cos(f);return{x:-s/2-r*sin,z:r*cos,nx:-sin,nz:cos,tx:-cos,tz:-sin}}
+  t-=arc;if(t<s)return{x:-s/2+t,z:-r,nx:0,nz:-1,tx:1,tz:0};t-=s;
+  const f=Math.min(Math.PI,t/r),sin=Math.sin(f),cos=Math.cos(f);
+  return{x:s/2+r*sin,z:-r*cos,nx:sin,nz:-cos,tx:cos,tz:sin}
+}
+function proj(g,x,z){const k=g.a+g.b*z;return{x:g.cx+x*k,y:g.ym+TILT*(g.a*z+(g.b*z*z)/2),k}}
+function makeGeo(width,n,d,kb){
+  const l=Math.max(1,n)*SPACING*d,r=Math.min(CURVE*d,l/(2*Math.PI)),s=Math.max(0,(l-2*Math.PI*r)/2);
+  const g={width,height:0,d,r,s,l,pitch:l/Math.max(1,n),n:Math.max(1,n),kb,cx:width/2,ym:0,a:(1+kb)/2,b:(1-kb)/(2*r),band:BAND*d,slats:Math.max(10,Math.round(l/(SLAT*d))),side:Math.max(3,d*0.07),edgeTop:0};
+  let top=Infinity,bot=-Infinity,edge=Infinity;
+  for(let j=0;j<120;j++){
+    const p=along(g,(j/120)*l),rim=proj(g,p.x+(p.nx*g.band)/2,p.z+(p.nz*g.band)/2),pl=proj(g,p.x,p.z),half=(pl.k*d*TILT)/2;
+    edge=Math.min(edge,rim.y);top=Math.min(top,rim.y,pl.y+(LIFT_Y/100)*half*2-half*(1+LIFT_SCALE)-CHIP_ROOM);bot=Math.max(bot,rim.y+g.side+d*0.06,pl.y+half+d*0.08);
+  }
+  g.ym=Math.ceil(-top)+2;g.height=Math.ceil(bot-top)+4;g.edgeTop=edge+g.ym;return g;
+}
+function halfSpan(g){let sp=0;for(let j=0;j<120;j++){const p=along(g,(j/120)*g.l),rim=proj(g,p.x+(p.nx*g.band)/2,p.z+(p.nz*g.band)/2),pl=proj(g,p.x,p.z);sp=Math.max(sp,Math.abs(rim.x-g.cx)+3,Math.abs(pl.x-g.cx)+(pl.k*g.d*(1+LIFT_SCALE))/2)}return sp}
+function edgePath(g,off){let d="";for(let j=0;j<168;j++){const p=along(g,(j/168)*g.l),q=proj(g,p.x+p.nx*off,p.z+p.nz*off);d+=`${j?"L":"M"}${q.x.toFixed(1)} ${q.y.toFixed(1)}`}return d+"Z"}
+function slatPath(g,off,shift){const half=g.band*0.46,pitch=g.l/g.slats,bulge=pitch*0.2;let d="";for(let j=0;j<g.slats;j++){const p=along(g,off+shift+j*pitch),inner=proj(g,p.x-p.nx*half,p.z-p.nz*half),outer=proj(g,p.x+p.nx*half,p.z+p.nz*half),mid=proj(g,p.x+p.tx*bulge,p.z+p.tz*bulge);d+=`M${inner.x.toFixed(1)} ${inner.y.toFixed(1)}Q${(2*mid.x-(inner.x+outer.x)/2).toFixed(1)} ${(2*mid.y-(inner.y+outer.y)/2).toFixed(1)} ${outer.x.toFixed(1)} ${outer.y.toFixed(1)}`}return d}
+function pose(g,off,i){const p=along(g,off-i*g.pitch),q=proj(g,p.x,p.z);return{x:q.x,y:q.y,k:q.k,depth:(p.z+g.r)/(2*g.r)}}
+function centerOf(g,off){return((Math.round((off-g.s/2)/g.pitch)%g.n)+g.n)%g.n}
+function legendEntries(items,legend){const out=[];for(let t=1;t<=5;t++){const lbl=legend?legend[t]:items.find(i=>(i.tier??1)===t)?.price;if(lbl)out.push({tier:t,label:lbl})}return out}
+function pad(v){return String(v).padStart(2,"0")}
+function makeSim(){return{offset:0,v:0,mode:RUN,target:0,lift:[],vlift:[],z:[],lane:[],raf:0,last:0,visible:true,init:false,touched:false,l:0,center:-1,published:"",px:0,py:0,inside:false,lock:false,lockX:0,lockY:0}}
+
+const svgX=()=>h("svg",{viewBox:"0 0 16 16",width:14,height:14,fill:"none",stroke:"currentColor",strokeWidth:1.6,strokeLinecap:"round"},h("path",{d:"M3.5 3.5l9 9M12.5 3.5l-9 9"}));
+const svgL=()=>h("svg",{viewBox:"0 0 16 16",width:14,height:14,fill:"none",stroke:"currentColor",strokeWidth:1.7,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M10 3.5 5.5 8l4.5 4.5"}));
+const svgR=()=>h("svg",{viewBox:"0 0 16 16",width:14,height:14,fill:"none",stroke:"currentColor",strokeWidth:1.7,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M6 3.5 10.5 8 6 12.5"}));
+const svgPlay=()=>h("svg",{viewBox:"0 0 16 16",width:14,height:14,fill:"currentColor"},h("path",{d:"M5 3.4v9.2a.6.6 0 0 0 .9.5l7.4-4.6a.6.6 0 0 0 0-1L5.9 2.9a.6.6 0 0 0-.9.5Z"}));
+const svgPause=()=>h("svg",{viewBox:"0 0 16 16",width:14,height:14,fill:"currentColor"},h("rect",{x:4,y:3,width:2.6,height:10,rx:0.8}),h("rect",{x:9.4,y:3,width:2.6,height:10,rx:0.8}));
+const svgPlus=()=>h("svg",{viewBox:"0 0 16 16",width:16,height:16,fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M8 3.5v9M3.5 8h9"}));
+const svgCheck=()=>h("svg",{viewBox:"0 0 16 16",width:16,height:16,fill:"none",stroke:"currentColor",strokeWidth:1.9,strokeLinecap:"round",strokeLinejoin:"round"},h("path",{d:"M3.5 8.5l3 3 6-7"}));
+
+function DishDialog({uid,item,index,total,labels,reduced,broken,source,onLift,onAdd,onClose}){
+  const dialogRef=useRef(null),figureRef=useRef(null),closeRef=useRef(null);
+  const timer=useRef(0),closing=useRef(false);
+  const[shown,setShown]=useState(false);
+  const[added,setAdded]=useState(false);
+  const titleId=`${uid}-dish-title`;
+  const t=tier(item.tier);
+  useLayoutEffect(()=>{
+    const figure=figureRef.current,from=source();
+    closeRef.current?.focus({preventScroll:true});
+    const ov=document.body.style.overflow;document.body.style.overflow="hidden";
+    onLift(true);let anim=null;
+    if(figure&&from&&!reduced&&from.width>0){
+      const to=figure.getBoundingClientRect(),sx=from.width/to.width,sy=from.height/to.height;
+      const dx=from.left+from.width/2-(to.left+to.width/2),dy=from.top+from.height/2-(to.top+to.height/2),rise=Math.min(120,Math.abs(dy)*0.3+40);
+      anim=figure.animate([{transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`},{transform:`translate(${dx*.42}px,${dy*.42-rise}px) scale(${((sx+1)/2)*1.05},${((sy+1)/2)*1.05}) rotate(${dx>0?-6:6}deg)`,offset:0.5},{transform:"none"}],{duration:680,easing:"cubic-bezier(.22,.85,.3,1)"});
+    }
+    const raf=requestAnimationFrame(()=>setShown(true));
+    return()=>{cancelAnimationFrame(raf);anim?.cancel();window.clearTimeout(timer.current);document.body.style.overflow=ov;onLift(false)};
+  },[]);
+  const dismiss=useCallback(()=>{
+    if(closing.current)return;closing.current=true;setShown(false);
+    const figure=figureRef.current,to=source();
+    if(!figure||!to||reduced||to.width===0){onClose();return}
+    const from=figure.getBoundingClientRect(),sx=to.width/from.width,sy=to.height/from.height,dx=to.left+to.width/2-(from.left+from.width/2),dy=to.top+to.height/2-(from.top+from.height/2);
+    const a=figure.animate([{transform:"none"},{transform:`translate(${dx*.58}px,${dy*.58-36}px) scale(${(sx+1)/2},${(sy+1)/2})`,offset:0.55},{transform:`translate(${dx}px,${dy}px) scale(${sx},${sy})`}],{duration:540,easing:"cubic-bezier(.45,0,.55,1)",fill:"forwards"});
+    a.onfinish=()=>onClose();
+  },[]);
+  useEffect(()=>{
+    const fn=e=>{const d=dialogRef.current;if(!d||d.contains(e.target))return;if(e.key==="Escape"){e.preventDefault();dismiss()}else if(e.key==="Tab"){const f=d.querySelector("button");if(f){e.preventDefault();f.focus()}}};
+    document.addEventListener("keydown",fn);return()=>document.removeEventListener("keydown",fn);
+  },[dismiss]);
+  const onKD=e=>{if(e.key==="Escape"){e.preventDefault();dismiss();return}if(e.key!=="Tab")return;const btns=[...(dialogRef.current?.querySelectorAll("button")??[])].filter(n=>!n.disabled);const first=btns[0],last=btns.at(-1);if(!first||!last)return;if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}};
+  const addItem=()=>{if(added||closing.current)return;onAdd();setAdded(true);timer.current=window.setTimeout(dismiss,reduced?0:450)};
+  const card={position:"relative",width:"100%",maxWidth:"52rem",display:"grid",alignItems:"center",gap:"1.5rem",padding:"1.25rem"};
+  const cardBg={position:"absolute",inset:0,borderRadius:"2rem",border:"1px solid var(--bd2)",backgroundColor:"var(--card2)",boxShadow:"0 25px 60px rgba(0,0,0,.7)",transition:"opacity .3s, scale .3s",opacity:shown?1:0,scale:shown?1:0.97};
+  return createPortal(
+    h("div",{ref:dialogRef,role:"dialog","aria-modal":true,"aria-labelledby":titleId,style:{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:"1rem",color:"var(--fg)"},onKeyDown:onKD},
+      h("div",{"aria-hidden":true,style:{position:"absolute",inset:0,backgroundColor:"rgba(0,0,0,.85)",backdropFilter:"blur(16px)",transition:"opacity .3s",opacity:shown?1:0},onClick:dismiss}),
+      h("div",{style:card},
+        h("div",{"aria-hidden":true,style:cardBg}),
+        h("button",{ref:closeRef,type:"button",onClick:dismiss,style:{position:"absolute",right:".75rem",top:".75rem",zIndex:10,display:"inline-flex",alignItems:"center",gap:".375rem",borderRadius:"9999px",padding:".375rem .75rem",fontSize:".75rem",fontWeight:500,color:"var(--fg3)",background:"none",border:"none",cursor:"pointer",transition:"color .2s",opacity:shown?1:0,fontFamily:"inherit"},onMouseEnter:e=>e.currentTarget.style.color="var(--fg)",onMouseLeave:e=>e.currentTarget.style.color="var(--fg3)"},labels.close,svgX()),
+        h("div",{ref:figureRef,style:{position:"relative",margin:"0 auto",aspectRatio:"1",width:"100%",maxWidth:"min(42vh,22rem)"}},
+          h("span",{"aria-hidden":true,style:{position:"absolute",inset:"14% 8% -4%",borderRadius:"9999px",backgroundColor:"black",opacity:.4,filter:"blur(2rem)"}}),
+          broken?h("span",{style:{position:"absolute",inset:"3%",borderRadius:"9999px",border:"1px solid var(--bd)",backgroundColor:"var(--card)"}},h("span",{style:{position:"absolute",inset:"30%",borderRadius:"9999px",backgroundColor:"rgba(255,255,255,.05)"}}))
+               :h("img",{src:item.image,alt:item.name,draggable:false,style:{position:"relative",width:"100%",height:"100%",objectFit:"contain",userSelect:"none"}}),
+          h("span",{"aria-hidden":true,style:{position:"absolute",inset:"-1.5%",borderRadius:"9999px",border:`3px solid ${t.ring}`}})),
+        h("div",{style:{position:"relative",display:"flex",flexDirection:"column",gap:".75rem",textAlign:"center",transition:"opacity .5s .15s, translate .5s .15s",opacity:shown?1:0,translate:shown?"0 0":"0 8px"}},
+          h("p",{style:{display:"flex",alignItems:"center",justifyContent:"center",gap:".5rem",fontFamily:"ui-monospace,monospace",fontSize:"11px",letterSpacing:".2em",color:"var(--fg3)"}},
+            h("span",{"aria-hidden":true,style:{width:8,height:8,borderRadius:"9999px",backgroundColor:t.dot,display:"inline-block"}}),`${pad(index+1)} / ${pad(total)}`),
+          h("h3",{id:titleId,style:{fontSize:"1.5rem",fontWeight:600,letterSpacing:"-.02em"}},item.name),
+          item.description&&h("p",{style:{fontSize:".875rem",lineHeight:1.7,color:"var(--fg2)"}},item.description),
+          item.details?.length>0&&h("ul",{style:{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:".5rem",listStyle:"none"}},item.details.map(d=>h("li",{key:d,style:{borderRadius:"9999px",border:"1px solid var(--bd)",padding:".25rem .75rem",fontSize:".72rem",color:"var(--fg3)"}},d))),
+          h("div",{style:{marginTop:".5rem",display:"flex",flexWrap:"wrap",alignItems:"center",justifyContent:"center",gap:"1rem"}},
+            h("p",{style:{fontSize:"1.5rem",fontWeight:700,fontVariantNumeric:"tabular-nums",color:"var(--gold)"}},item.price),
+            h("button",{type:"button",onClick:addItem,style:{display:"inline-flex",alignItems:"center",gap:".5rem",borderRadius:"9999px",backgroundColor:"var(--accent)",padding:".625rem 1.25rem",fontSize:".875rem",fontWeight:600,color:"#fff",border:"none",cursor:"pointer",fontFamily:"inherit",transition:"background .2s,transform .15s"},onMouseEnter:e=>{e.currentTarget.style.background="var(--accent2)";e.currentTarget.style.transform="translateY(-1px)"},onMouseLeave:e=>{e.currentTarget.style.background="var(--accent)";e.currentTarget.style.transform=""}},added?svgCheck():svgPlus(),labels.add)))
+      )
+    ),document.body);
+}
+
+function BeltMenu({items,eyebrow,heading,caption,action,speed=26,paused:pausedProp,autoplay=false,interval=3000,active:activeProp,onActiveChange,onOpenChange,onAdd,legend,labels=LBL}){
+  const rawId=useId(),uid=rawId.replace(/[^a-zA-Z0-9_-]/g,"");
+  const count=items.length;
+  const sectionRef=useRef(null),stageRef=useRef(null),beltRef=useRef(null),seamRef=useRef(null),glintRef=useRef(null);
+  const plates=useRef([]),lifts=useRef([]),shades=useRef([]),shadows=useRef([]),anchors=useRef([]);
+  const sim=useRef(makeSim());
+  const pointer=useRef({id:-1,index:-1,x:0,y:0,moved:false,start:0,lane:1,lastX:0,lastT:0,v:0});
+  const pendingOpen=useRef(-1),returnFocus=useRef(null),autoActive=useRef(null),autoLast=useRef(null);
+  const[size,setSize]=useState({section:0,stage:0});
+  const[innerActive,setInnerActive]=useState(null);
+  const[innerPaused,setInnerPaused]=useState(false);
+  const[openIndex,setOpenIndex]=useState(null);
+  const[lifted,setLifted]=useState(null);
+  const[reduced,setReduced]=useState(()=>typeof window!=="undefined"&&window.matchMedia?.("(prefers-reduced-motion:reduce)").matches);
+  const[playing,setPlaying]=useState(autoplay);
+  const[center,setCenter]=useState(0);
+  const[failed,setFailed]=useState({});
+  const requested=activeProp!==undefined?activeProp:innerActive;
+  const active=requested!==null&&requested>=0&&requested<count?requested:null;
+  const paused=pausedProp??innerPaused;
+  const wide=size.section>=WIDE,narrow=size.section>0&&size.section<480,kb=narrow?0.6:0.68;
+  const geo=useMemo(()=>{if(!size.stage||count===0)return null;const sp=halfSpan(makeGeo(1000,count,100,kb))/100,cap=wide?150:clamp(size.section*0.143,96,150),fit=(size.stage-8)/(2*sp);return makeGeo(size.stage,count,Math.round(clamp(fit,Math.min(96,cap),cap)),kb)},[size.stage,size.section,count,kb,wide]);
+  const live=useRef({});
+  live.current={geo,active,paused,reduced,open:openIndex!==null,count,speed:Math.max(0,speed),activeControlled:activeProp!==undefined,pausedControlled:pausedProp!==undefined,onActiveChange,onOpenChange,onAdd};
+  const paintPlate=useCallback(i=>{
+    const L=live.current,g=L.geo,s=sim.current,btn=plates.current[i];if(!g||!btn)return;
+    const q=pose(g,s.offset,i),e=s.lift[i]??0;
+    btn.style.transform=`translate3d(${(q.x-g.d/2).toFixed(2)}px,${(q.y-(g.d*TILT)/2).toFixed(2)}px,0) scale(${q.k.toFixed(4)})`;
+    const z=i===L.active?2000:100+Math.round(q.y);if(s.z[i]!==z){s.z[i]=z;btn.style.zIndex=String(z)}
+    const lane=q.depth>=0.5?"front":"back";if(s.lane[i]!==lane){s.lane[i]=lane;btn.dataset.lane=lane}
+    const lft=lifts.current[i];if(lft)lft.style.transform=`translateY(${(LIFT_Y*e).toFixed(3)}%) scale(${(1+LIFT_SCALE*e).toFixed(4)})`;
+    const sh=shades.current[i];if(sh)sh.style.opacity=(BACK_SHADE*clamp(1-q.depth,0,1)*(1-0.7*clamp(e,0,1))).toFixed(3);
+    const sd=shadows.current[i];if(sd){sd.style.transform=`translate3d(0,${(g.d*TILT*0.05*e).toFixed(2)}px,0) scale(${(1+0.14*e).toFixed(3)})`;sd.style.opacity=(1-0.5*clamp(e,0,1)).toFixed(3)}
+    const an=anchors.current[i];if(an)an.style.transform=`scale(${(1/(q.k*(1+LIFT_SCALE*e))).toFixed(4)})`;
+  },[]);
+  const paintBelt=useCallback(()=>{
+    const L=live.current,g=L.geo,s=sim.current;if(!g)return;
+    seamRef.current?.setAttribute("d",slatPath(g,s.offset,0));glintRef.current?.setAttribute("d",slatPath(g,s.offset,-Math.max(1.4,g.d*0.024)));
+    const v=(Math.abs(s.v)<0.005?0:s.v).toFixed(2);if(v!==s.published){s.published=v;beltRef.current?.style.setProperty("--belt-v",v)}
+    const c=centerOf(g,s.offset);if(c!==s.center){s.center=c;setCenter(c)}
+  },[]);
+  const paintAll=useCallback(()=>{for(let i=0;i<live.current.count;i++)paintPlate(i);paintBelt()},[paintPlate,paintBelt]);
+  const hitTest=useCallback((px,py)=>{
+    const L=live.current,g=L.geo,s=sim.current;if(!g)return null;let best=null,bestY=-Infinity;
+    for(let i=0;i<L.count;i++){const q=pose(g,s.offset,i),e=clamp(s.lift[i]??0,0,1.2),grow=(1+LIFT_SCALE*e)*(i===L.active?1.1:1);const rx=(g.d*q.k*grow)/2,ry=(g.d*TILT*q.k*grow)/2,dx=(px-q.x)/rx,dy=(py-(q.y+(LIFT_Y/100)*g.d*TILT*q.k*e))/ry;if(dx*dx+dy*dy>1)continue;if(i===L.active)return i;if(q.y>bestY){best=i;bestY=q.y}}
+    return best;
+  },[]);
+  const hoverRef=useRef(hit=>{void hit});
+  const tick=useCallback(now=>{
+    const s=sim.current,L=live.current,g=L.geo;s.raf=0;if(!g||!s.visible){s.last=0;return}
+    const dt=s.last?clamp((now-s.last)/1000,0,0.25):1/60;s.last=now;
+    const steps=Math.max(1,Math.ceil(dt/0.017)),hh=dt/steps,stopped=L.paused||L.active!==null||L.open,cruise=L.reduced?0:L.speed;
+    for(let step=0;step<steps;step++){
+      if(s.mode===SEEK){const w=5.6;s.v+=(w*w*(s.target-s.offset)-2*w*s.v)*hh;s.offset+=s.v*hh;if(Math.abs(s.target-s.offset)<0.3&&Math.abs(s.v)<4){s.offset=s.target;s.v=0;s.mode=RUN}}
+      else if(s.mode===RUN){if(stopped){s.v*=Math.exp(-7.2*hh);if(Math.abs(s.v)<0.02)s.v=0}else{let e=s.v-cruise;if(Math.abs(e)>Math.max(6,cruise*0.5))e=Math.sign(e)*Math.max(0,Math.abs(e)*Math.exp(-2.4*hh)-90*hh);else e*=Math.exp(-3.4*hh);s.v=cruise+(Math.abs(e)<0.01?0:e)}s.offset+=s.v*hh}
+      for(let i=0;i<L.count;i++){const goal=i===L.active?1:0;if(L.reduced){s.lift[i]=goal;s.vlift[i]=0;continue}const x=s.lift[i]??0,v=(s.vlift[i]??0)+(330*(goal-x)-23*(s.vlift[i]??0))*hh;s.lift[i]=x+v*hh;s.vlift[i]=v}
+    }
+    let busy=s.mode!==RUN||s.v!==0||(!stopped&&cruise>0);
+    for(let i=0;i<L.count;i++){const goal=i===L.active?1:0;if(Math.abs(goal-(s.lift[i]??0))<0.002&&Math.abs(s.vlift[i]??0)<0.02){s.lift[i]=goal;s.vlift[i]=0}else busy=true}
+    if(s.inside&&!s.lock&&s.mode===RUN&&!L.open&&pointer.current.id<0&&Math.abs(s.v)>0.3){const hit=hitTest(s.px,s.py);if(hit!==null&&hit!==L.active)hoverRef.current(hit)}
+    paintAll();if(busy)s.raf=requestAnimationFrame(tick);else s.last=0;
+  },[hitTest,paintAll]);
+  const kick=useCallback(()=>{const s=sim.current;if(s.raf||!s.visible)return;s.last=0;s.raf=requestAnimationFrame(tick)},[tick]);
+  const setActive=useCallback(next=>{const L=live.current;if(L.active===next)return;if(!L.activeControlled){L.active=next;setInnerActive(next)}L.onActiveChange?.(next);kick()},[kick]);
+  const stop=useCallback(()=>{setPlaying(false);const s=sim.current;s.touched=true;if(s.mode===SEEK)s.mode=RUN;const auto=autoActive.current;if(auto!==null){autoActive.current=null;if(live.current.active===auto)setActive(null)}},[setActive]);
+  const seekTo=useCallback(idx=>{const s=sim.current,g=live.current.geo;if(!g)return;const base=g.s/2+idx*g.pitch;s.target=base+Math.round((s.offset-base)/g.l)*g.l;if(live.current.reduced){s.offset=s.target;s.v=0;s.mode=RUN;paintAll();return}s.mode=SEEK;kick()},[kick,paintAll]);
+  const focusVisible=()=>!!stageRef.current?.querySelector("[data-dish]:focus-visible");
+  hoverRef.current=hit=>{const cur=live.current.active;if(hit===cur){if(hit!==null&&autoActive.current===hit){autoActive.current=null;setPlaying(false)}return}if(hit!==null){stop();setActive(hit);return}if(cur!==null&&cur!==autoActive.current&&!focusVisible())setActive(null)};
+  const openDish=useCallback(idx=>{stop();setActive(idx);const s=sim.current;s.v=0;s.mode=RUN;live.current.open=true;paintBelt();setOpenIndex(idx);live.current.onOpenChange?.(idx)},[stop,setActive,paintBelt]);
+  const closeDish=useCallback(()=>{live.current.open=false;setOpenIndex(null);live.current.onOpenChange?.(null);kick()},[kick]);
+  const go=(idx,focus)=>{if(count===0)return;const next=((idx%count)+count)%count;stop();if(focus)plates.current[next]?.focus({preventScroll:true});setActive(next);seekTo(next)};
+  const togglePause=()=>{stop();const L=live.current,next=!L.paused;if(!L.pausedControlled){L.paused=next;setInnerPaused(next)}if(!next&&L.active!==null&&!focusVisible()&&!sim.current.inside)setActive(null);kick()};
+  useEffect(()=>{const m=window.matchMedia("(prefers-reduced-motion:reduce)");const u=()=>setReduced(m.matches);u();m.addEventListener("change",u);return()=>m.removeEventListener("change",u)},[]);
+  useEffect(()=>{setPlaying(autoplay)},[autoplay]);
+  useLayoutEffect(()=>{const section=sectionRef.current,stage=stageRef.current;if(!section||!stage)return;const measure=()=>{const next={section:Math.round(section.clientWidth),stage:Math.round(stage.clientWidth)};setSize(old=>old.section===next.section&&old.stage===next.stage?old:next)};measure();const obs=new ResizeObserver(measure);obs.observe(section);obs.observe(stage);return()=>obs.disconnect()},[count>0]);
+  useLayoutEffect(()=>{const s=sim.current;if(!geo)return;if(!s.init){s.init=true;s.offset=geo.s/2-Math.min(live.current.speed*1.62,geo.pitch*0.45);s.v=live.current.reduced||live.current.paused?0:live.current.speed}else if(s.l>0&&s.l!==geo.l){const f=geo.l/s.l;s.offset*=f;s.target*=f}if(live.current.reduced){s.v=0;if(s.mode!==DRAG)s.mode=RUN;if(!s.touched)s.offset=geo.s/2}s.l=geo.l;s.z=[];s.lane=[];paintAll();kick()},[geo,items,reduced,paintAll,kick]);
+  useEffect(()=>{kick()},[active,paused,openIndex,reduced,speed,kick]);
+  useEffect(()=>{const node=sectionRef.current,s=sim.current;let inView=true;const upd=()=>{const vis=inView&&!document.hidden;if(vis===s.visible)return;s.visible=vis;if(vis)kick();else if(s.raf){cancelAnimationFrame(s.raf);s.raf=0;s.last=0}};const obs=node&&typeof IntersectionObserver==="function"?new IntersectionObserver(entries=>{inView=entries.some(e=>e.isIntersecting);upd()}):null;if(node&&obs)obs.observe(node);document.addEventListener("visibilitychange",upd);upd();return()=>{obs?.disconnect();document.removeEventListener("visibilitychange",upd)}},[kick]);
+  useEffect(()=>()=>{const s=sim.current;if(s.raf)cancelAnimationFrame(s.raf);s.raf=0;s.last=0},[]);
+  const geoReady=geo!==null;
+  useEffect(()=>{if(!playing||reduced||paused||openIndex!==null||count===0||!geoReady)return;let timer=0;const show=()=>{const g=live.current.geo;if(!g)return;const last=autoLast.current,idx=last===null?centerOf(g,sim.current.offset+live.current.speed*0.25):(last+1)%count;autoLast.current=idx;autoActive.current=idx;setActive(idx);seekTo(idx);timer=window.setTimeout(()=>{if(autoActive.current===idx){autoActive.current=null;if(live.current.active===idx)setActive(null)}timer=window.setTimeout(show,Math.max(300,interval-HOLD))},HOLD)};timer=window.setTimeout(show,autoLast.current===null?1600:Math.max(300,interval-HOLD));return()=>window.clearTimeout(timer)},[playing,reduced,paused,openIndex,count,interval,geoReady,setActive,seekTo]);
+  useLayoutEffect(()=>{if(openIndex!==null||lifted!==null||returnFocus.current===null)return;const idx=returnFocus.current;returnFocus.current=null;plates.current[idx]?.focus({preventScroll:true})},[openIndex,lifted]);
+  const local=e=>{const box=stageRef.current?.getBoundingClientRect();return{x:e.clientX-(box?.left??0),y:e.clientY-(box?.top??0)}};
+  const onPointerDown=e=>{const g=live.current.geo;if(e.button!==0||!g)return;const at=local(e),hit=hitTest(at.x,at.y);pendingOpen.current=-1;pointer.current={id:e.pointerId,index:hit??-1,x:e.clientX,y:e.clientY,moved:false,start:sim.current.offset,lane:at.y>=g.ym?1:-1,lastX:e.clientX,lastT:e.timeStamp,v:0}};
+  const onPointerMove=e=>{const s=sim.current,p=pointer.current,stage=stageRef.current,g=live.current.geo;if(!stage||!g)return;const at=local(e);if(e.pointerType==="mouse"){s.px=at.x;s.py=at.y;s.inside=true}if(p.id===e.pointerId){const dx=e.clientX-p.x,now=e.timeStamp;if(!p.moved&&Math.abs(dx)>6&&Math.abs(dx)>Math.abs(e.clientY-p.y)){p.moved=true;stop();setActive(null);s.mode=DRAG;if(stage.isConnected)stage.setPointerCapture(e.pointerId)}if(p.moved){const v=(e.clientX-p.lastX)/Math.max(1,now-p.lastT);p.v=p.v*0.6+v*0.4;p.lastX=e.clientX;p.lastT=now;const sc=p.lane>0?1:1/g.kb;s.offset=p.start-p.lane*dx*sc;s.v=live.current.reduced?0:-p.lane*p.v*1000*sc;kick()}return}if(e.pointerType!=="mouse"||live.current.open)return;if(s.lock){if(Math.hypot(at.x-s.lockX,at.y-s.lockY)<4)return;s.lock=false}hoverRef.current(hitTest(at.x,at.y))};
+  const finishPointer=(e,cancelled)=>{const p=pointer.current;if(p.id!==e.pointerId)return;const s=sim.current,stage=stageRef.current;if(stage?.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);pointer.current={...p,id:-1};if(s.mode===DRAG){s.mode=RUN;const carry=Math.exp(-Math.max(0,e.timeStamp-p.lastT)/70);s.v=live.current.reduced?0:clamp(s.v*carry,-1400,1400);if(e.pointerType==="mouse"){const at=local(e);s.lock=true;s.lockX=at.x;s.lockY=at.y}kick();return}if(cancelled||p.moved)return;const touch=e.pointerType!=="mouse";if(p.index<0){if(touch&&live.current.active!==null){stop();setActive(null)}return}stop();if(touch&&live.current.active!==p.index)setActive(p.index);else pendingOpen.current=p.index};
+  const onKD=e=>{if(!["ArrowRight","ArrowLeft","Home","End"].includes(e.key)||count===0)return;e.preventDefault();const own=e.target.closest("[data-dish]")?.getAttribute("data-dish");const from=own!=null?Number(own):(active??center);go(e.key==="Home"?0:e.key==="End"?count-1:from+(e.key==="ArrowRight"?1:-1),true)};
+  const openSource=useCallback(()=>openIndex===null?null:lifts.current[openIndex]?.getBoundingClientRect()??null,[openIndex]);
+  const onLift=useCallback(on=>setLifted(on?openIndex:null),[openIndex]);
+  const onDialogClose=useCallback(()=>{returnFocus.current=openIndex;closeDish()},[openIndex,closeDish]);
+  const onDialogAdd=useCallback(()=>{const item=openIndex===null?undefined:items[openIndex];if(item)live.current.onAdd?.(item)},[openIndex,items]);
+  const paths=useMemo(()=>geo?{outer:edgePath(geo,geo.band/2),inner:edgePath(geo,-geo.band/2),island:edgePath(geo,-geo.band/2-geo.d*0.035)}:null,[geo]);
+  const current=active===null?null:items[active]??null;
+  const roving=active??center;
+  const tiers=legendEntries(items,legend);
+  const g=geo;
+  const CB=(lbl,fn,icon)=>h("button",{type:"button","aria-label":lbl,onClick:fn,style:{display:"inline-flex",width:"2rem",height:"2rem",alignItems:"center",justifyContent:"center",borderRadius:"9999px",border:"1px solid var(--bd2)",backgroundColor:"var(--card)",color:"var(--fg3)",cursor:"pointer",outline:"none",flexShrink:0},onMouseEnter:e=>e.currentTarget.style.color="var(--fg)",onMouseLeave:e=>e.currentTarget.style.color="var(--fg3)"},icon);
+  const header=(eyebrow||heading||tiers.length>0)&&h("div",{style:{display:"flex",flexDirection:"column",alignItems:wide?"flex-start":"center",gap:".75rem",textAlign:wide?"left":"center",padding:wide?0:"0 .5rem"}},
+    eyebrow&&h("p",{style:{fontSize:"11px",fontWeight:500,textTransform:"uppercase",letterSpacing:".28em",color:"var(--accent)"}},eyebrow),
+    heading&&h("h2",{style:{fontSize:wide?"2.25rem":"1.5rem",fontWeight:300,letterSpacing:"-.02em",lineHeight:1.15,color:"var(--fg)"}},heading),
+    tiers.length>0&&h("ul",{"aria-hidden":true,style:{display:"flex",flexWrap:"wrap",alignItems:"center",gap:".375rem .875rem",fontSize:"11px",fontVariantNumeric:"tabular-nums",color:"var(--fg3)",listStyle:"none",justifyContent:wide?"flex-start":"center"}},tiers.map(e=>h("li",{key:e.tier,style:{display:"inline-flex",alignItems:"center",gap:".375rem"}},h("span",{style:{width:10,height:10,borderRadius:"9999px",border:`2px solid ${tier(e.tier).ring}`,display:"inline-block",flexShrink:0}}),e.label)))
+  );
+  const captionEl=h("div",{id:`${uid}-caption`,"aria-live":"polite",style:{minHeight:wide?"3.25rem":"2.75rem",textAlign:wide?"left":"center",padding:wide?0:"0 .5rem",maxWidth:wide?"none":"28rem",margin:wide?0:"0.5rem auto 0"}},
+    h("p",{style:{fontSize:".875rem",fontWeight:current?500:400,color:current?"var(--fg)":"var(--fg3)"}},current?h(React.Fragment,null,current.name," ",h("span",{style:{fontWeight:400,fontVariantNumeric:"tabular-nums",color:"var(--gold)"}},`· ${current.price}`)):caption),
+    current?.description&&h("p",{style:{marginTop:".125rem",fontSize:"13px",lineHeight:1.5,color:"var(--fg2)"}},current.description));
+  const ctrlEl=count>1&&h("div",{style:{position:"relative",zIndex:10,marginTop:".25rem",display:"flex",alignItems:"center",justifyContent:"center",gap:".375rem"}},
+    CB(labels.previous,()=>go((live.current.active??sim.current.center)-1,false),svgL()),
+    CB(labels.pause??LBL.pause,togglePause,paused?svgPlay():svgPause()),
+    CB(labels.next,()=>go((live.current.active??sim.current.center)+1,false),svgR()));
+  const stageEl=count>0&&h("div",{ref:stageRef,"data-stage":true,role:"group","aria-label":heading??"Sushi conveyor belt","aria-roledescription":"conveyor belt",style:{position:"relative",width:"100%",touchAction:"pan-y",userSelect:"none",height:g?g.height:260,overflow:"hidden"},onPointerDown,onPointerMove,onPointerUp:e=>finishPointer(e,false),onPointerCancel:e=>finishPointer(e,true),onPointerLeave:e=>{if(e.pointerType!=="mouse")return;const s=sim.current;s.inside=false;s.lock=false;const cur=live.current.active;if(pointer.current.id<0&&!live.current.open&&cur!==null&&cur!==autoActive.current&&!focusVisible())setActive(null)},onBlur:e=>{const next=e.relatedTarget;if((next&&stageRef.current?.contains(next))||live.current.open||sim.current.inside)return;const cur=live.current.active;if(cur!==null&&cur!==autoActive.current)setActive(null)},onKeyDown:onKD},
+    g&&h("div",{"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",left:0,right:0,top:Math.max(0,g.edgeTop-g.d*0.34),height:g.ym-Math.max(0,g.edgeTop-g.d*0.34),background:"linear-gradient(to bottom, color-mix(in oklab, var(--fg) 9%, transparent) 0 1px, transparent 1px, color-mix(in oklab, var(--fg) 5%, transparent) 40%, transparent)",WebkitMaskImage:"linear-gradient(to right,transparent,black 18%,black 82%,transparent)",maskImage:"linear-gradient(to right,transparent,black 18%,black 82%,transparent)"}}),
+    h("div",{ref:beltRef,"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",inset:0}},
+      g&&paths&&h("svg",{style:{position:"absolute",left:0,top:0,overflow:"visible"},width:g.width,height:g.height,viewBox:`0 0 ${g.width} ${g.height}`},
+        h("defs",null,h("filter",{id:`${uid}-soft`,x:"-10%",y:"-30%",width:"120%",height:"160%"},h("feGaussianBlur",{stdDeviation:(g.d*0.06).toFixed(1)})),h("linearGradient",{id:`${uid}-island`,x1:"0",x2:"0",y1:"0",y2:"1"},h("stop",{offset:"0",stopColor:"var(--island)"}),h("stop",{offset:"1",stopColor:"var(--island-low)"}))),
+        h("path",{d:paths.outer,transform:`translate(0 ${(g.side+g.d*0.07).toFixed(1)})`,fill:"black",opacity:"0.6",filter:`url(#${uid}-soft)`}),
+        h("path",{d:`${paths.outer}${paths.inner}`,fillRule:"evenodd",transform:`translate(0 ${g.side.toFixed(1)})`,fill:"var(--belt-side)"}),
+        h("path",{d:`${paths.outer}${paths.inner}`,fillRule:"evenodd",fill:"var(--belt)"}),
+        h("path",{ref:seamRef,fill:"none",stroke:"black",strokeOpacity:"0.5",strokeWidth:Math.max(1,g.d*0.013),strokeLinecap:"round"}),
+        h("path",{ref:glintRef,fill:"none",stroke:"white",strokeOpacity:"0.06",strokeWidth:Math.max(0.8,g.d*0.009),strokeLinecap:"round"}),
+        h("path",{d:paths.outer,fill:"none",stroke:"var(--rail)",strokeWidth:Math.max(2,g.d*0.026)}),
+        h("path",{d:paths.outer,fill:"none",stroke:"white",strokeOpacity:"0.12",strokeWidth:Math.max(0.8,g.d*0.008),transform:"translate(0 -0.8)"}),
+        h("path",{d:paths.inner,fill:"none",stroke:"var(--rail)",strokeWidth:Math.max(1.6,g.d*0.02)}),
+        h("path",{d:paths.inner,fill:"none",stroke:"white",strokeOpacity:"0.08",strokeWidth:Math.max(0.8,g.d*0.008),transform:"translate(0 -0.7)"}),
+        h("path",{d:paths.island,fill:"var(--island-wall)"}),
+        h("path",{d:paths.island,transform:`translate(0 ${(-g.side*0.6).toFixed(1)})`,fill:`url(#${uid}-island)`}),
+        h("path",{d:paths.island,transform:`translate(0 ${(-g.side*0.6-0.6).toFixed(1)})`,fill:"none",stroke:"white",strokeOpacity:"0.15",strokeWidth:Math.max(0.8,g.d*0.008)})
+      )
+    ),
+    g&&items.map((item,i)=>{
+      const t=tier(item.tier),isActive=active===i,broken=!!failed[item.id],mask=`url("${item.image}") 0 0 / 100% 100% no-repeat`;
+      return h("button",{key:item.id,ref:node=>{plates.current[i]=node},type:"button","data-dish":i,"data-active":isActive||undefined,tabIndex:i===roving?0:-1,"aria-label":`${item.name}, ${item.price}`,"aria-describedby":`${uid}-caption`,"aria-haspopup":"dialog","aria-current":isActive||undefined,style:{position:"absolute",left:0,top:0,cursor:"pointer",borderRadius:"50%",border:"none",background:"none",padding:0,outline:"none",width:g.d,height:g.d*TILT,visibility:lifted===i?"hidden":undefined},onFocus:()=>{if(pointer.current.id<0){stop();setActive(i)}},onClick:e=>{const pending=pendingOpen.current;pendingOpen.current=-1;if(e.detail===0||pending===i)openDish(i)}},
+        h("span",{"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",inset:0,opacity:0.6}},h("span",{ref:node=>{shadows.current[i]=node},style:{position:"absolute",left:"5%",right:"5%",bottom:"-9%",top:"16%",borderRadius:"50%",backgroundColor:"black",filter:`blur(${Math.max(2,g.d*0.045).toFixed(1)}px)`}})),
+        h("span",{ref:node=>{lifts.current[i]=node},style:{position:"absolute",inset:0}},
+          h("span",{"aria-hidden":true,style:{position:"absolute",inset:broken?"3%":"6%",borderRadius:"50%",border:"1px solid var(--bd2)",backgroundColor:"var(--card2)"}},h("span",{style:{position:"absolute",inset:"30%",borderRadius:"50%",backgroundColor:"rgba(255,255,255,.05)"}})),
+          !broken&&h("img",{src:item.image,alt:"",draggable:false,onError:()=>setFailed(old=>old[item.id]?old:{...old,[item.id]:true}),style:{pointerEvents:"none",position:"absolute",inset:0,width:"100%",height:"100%",userSelect:"none",objectFit:"fill"}}),
+          !broken&&h("span",{ref:node=>{shades.current[i]=node},"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",inset:0,backgroundColor:"black",opacity:0,WebkitMask:mask,mask}}),
+          h("span",{"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",inset:"-2%",borderRadius:"50%",border:`2px solid ${t.ring}`}}),
+          h("span",{ref:node=>{anchors.current[i]=node},"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",left:"50%",top:0,width:0,height:0}},
+            h("span",{style:{position:"absolute",bottom:7,left:0,display:"flex",transform:"translateX(-50%)",alignItems:"center",gap:6,whiteSpace:"nowrap",borderRadius:"9999px",border:"1px solid var(--bd2)",backgroundColor:"var(--bg)",padding:"4px 10px 4px 8px",fontSize:"11px",fontWeight:500,lineHeight:1,color:"var(--fg)",boxShadow:"0 6px 16px -6px rgba(0,0,0,.6)",transition:"opacity .3s, translate .3s",opacity:isActive&&lifted!==i?1:0,translate:isActive&&lifted!==i?"0 0":"0 4px"}},
+              h("span",{style:{width:6,height:6,borderRadius:"9999px",backgroundColor:t.dot,flexShrink:0}}),item.name,h("span",{style:{fontVariantNumeric:"tabular-nums",color:"var(--gold)"}},item.price))
+          )
+        )
+      );
+    })
+  );
+  return h("section",{ref:sectionRef,style:{position:"relative",width:"100%",overflow:"hidden",backgroundColor:"var(--bg)",color:"var(--fg)",isolation:"isolate"}},
+    h("div",{"aria-hidden":true,style:{pointerEvents:"none",position:"absolute",inset:0,zIndex:-1,background:"radial-gradient(64% 52% at 50% 56%,color-mix(in oklab,var(--accent) 8%,transparent),transparent 72%)"}}),
+    wide
+      ?h("div",{style:{margin:"0 auto",display:"grid",gridTemplateColumns:"minmax(0,24rem) minmax(0,1fr)",alignItems:"center",gap:"3rem",padding:"3.5rem 2.5rem",maxWidth:"80rem"}},
+          h("div",{style:{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:"1.5rem"}},header,captionEl,action),
+          h("div",{style:{minWidth:0}},stageEl,ctrlEl))
+      :h("div",{style:{display:"flex",flexDirection:"column",alignItems:"center",padding:"1.5rem 1rem"}},
+          header,h("div",{style:{marginTop:".5rem",width:"100%",minWidth:0}},stageEl),ctrlEl,captionEl,
+          action&&h("div",{style:{marginTop:".75rem",display:"flex",justifyContent:"center"}},action)),
+    openIndex!==null&&items[openIndex]&&h(DishDialog,{uid,item:items[openIndex],index:openIndex,total:count,labels,reduced,broken:!!failed[items[openIndex].id],source:openSource,onLift,onAdd:onDialogAdd,onClose:onDialogClose})
+  );
+}
+
+/* ── dish data ── */
+const DISHES=[
+  {id:"salmon-nigiri",name:"Salmon Nigiri",price:"$4.20",tier:2,description:"Two slices of fresh Atlantic salmon over warm seasoned rice, with pickled ginger.",details:["2 pieces","Fish","Chef's pick"],image:"https://cdn.21st.dev/assets/mirror/e2/e2e31360457e8c31fe830c89bb3e618ef982a6a04ba3f988b074abefad47ab4d.webp"},
+  {id:"tuna-nigiri",name:"Tuna Nigiri",price:"$6.80",tier:4,description:"Lean red tuna over warm rice on a black lacquer plate.",details:["2 pieces","Fish"],image:"https://cdn.21st.dev/assets/mirror/dc/dc231956590214c669df43d2a95134c610bc01c4c8d5d245393fd48febc7b85d.webp"},
+  {id:"ebi-nigiri",name:"Ebi Nigiri",price:"$4.20",tier:2,description:"Butterflied poached shrimp over seasoned rice, tail left on.",details:["2 pieces","Shellfish"],image:"https://cdn.21st.dev/assets/mirror/ed/ed19038aa3d0ffb2b16e8daa4b21968e16038e1638446a55c90551e1e16b6b9f.webp"},
+  {id:"california-roll",name:"California Roll",price:"$5.40",tier:3,description:"Crab, avocado and cucumber, rolled inside out in orange tobiko.",details:["4 pieces","Shellfish","Fish roe"],image:"https://cdn.21st.dev/assets/mirror/7a/7a57f85603a9a61497066e45bf6fbfb10dbf7b9369f83469221eb0e9ee9fd899.webp"},
+  {id:"dragon-roll",name:"Dragon Roll",price:"$8.50",tier:5,description:"Shrimp tempura roll draped in avocado, finished with eel sauce.",details:["4 pieces","Shellfish","Wheat","Chef's pick"],image:"https://cdn.21st.dev/assets/mirror/81/816eddcbedeb62d59f7102783e13afd81ce1207e8180a9a83cde396a2d95f5f7.webp"},
+  {id:"tamago",name:"Tamago Nigiri",price:"$3.20",tier:1,description:"Sweet rolled omelette tied to rice with a band of nori.",details:["2 pieces","Egg"],image:"https://cdn.21st.dev/assets/mirror/2f/2fb834a44e170a6b2919da6441a7d8239b68a5f96782a3d032a031f78b96adb4.webp"},
+  {id:"edamame",name:"Salted Edamame",price:"$3.20",tier:1,description:"Steamed soybean pods tossed with flaky sea salt.",details:["1 bowl","Soy","Vegan"],image:"https://cdn.21st.dev/assets/mirror/12/1251847fad8f7d9288ff7f91954c54db0ef314f53dde2245bfc39497ee16fb42.webp"},
+  {id:"mochi",name:"Mochi Ice Cream",price:"$5.40",tier:3,description:"Matcha and strawberry mochi ice cream, one of each.",details:["2 pieces","Milk","Dessert"],image:"https://cdn.21st.dev/assets/mirror/5c/5cbcce544cf25127b238252e69d6ea879115e85ae61b9a47231ebeb0719c51b5.webp"},
+];
+const LEGEND={1:"$3.20",2:"$4.20",3:"$5.40",4:"$6.80",5:"$8.50"};
+
+function BeltApp(){
+  return h(BeltMenu,{
+    items:DISHES,legend:LEGEND,
+    eyebrow:"Kaiten · Lunch & Dinner Belt",
+    heading:"Fresh plates, always in motion",
+    caption:"Hover a plate to stop the belt. Click to see details and order.",
+    autoplay:true,
+    onAdd:item=>addOrder(item.name),
+    action:h("a",{href:"#reservation",style:{display:"inline-flex",alignItems:"center",gap:".5rem",borderRadius:"9999px",border:"1px solid var(--bd2)",color:"var(--fg2)",fontSize:".875rem",fontWeight:500,padding:".625rem 1.25rem",textDecoration:"none",transition:"border-color .2s,color .2s"},onMouseEnter:e=>{e.currentTarget.style.borderColor="var(--fg3)";e.currentTarget.style.color="var(--fg)"},onMouseLeave:e=>{e.currentTarget.style.borderColor="var(--bd2)";e.currentTarget.style.color="var(--fg2)"}},"Reserve a table →")
+  });
+}
+
+ReactDOM.createRoot(document.getElementById("belt-root")).render(h(BeltApp));
+</script>
+</body>
+</html>
